@@ -8,10 +8,16 @@ import java.io.IOException;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -66,7 +72,7 @@ public class RobotContainer {
   private final JoystickButton outtake_B = new JoystickButton(driverController, XboxController.Button.kB.value);
   private final JoystickButton turnToApril_LB = new JoystickButton(driverController, XboxController.Button.kLeftBumper.value);
   private final JoystickButton turnToNote_LS = new JoystickButton(driverController, XboxController.Button.kLeftStick.value);
-
+  private final JoystickButton ampAlign_Y = new JoystickButton(driverController, XboxController.Button.kY.value);
   //Operator Controls
   public static final CommandXboxController commandOpController = new CommandXboxController(IOConstants.OP_CONTROLLER_PORT);
   public static final XboxController opController = commandOpController.getHID();  
@@ -136,6 +142,27 @@ public class RobotContainer {
     //   .andThen(new InstantCommand(() -> climber.setZeroing(false)))
     //   .andThen(new InstantCommand(() -> climber.resetClimbSequence())));
     // nextClimbSequenceStep_RB.onTrue(new InstantCommand(() -> climber.nextClimbSequenceStep()));
+
+    // drive to pose
+    // ampAlign_Y.whileTrue(AutoBuilder.pathfindToPose(
+    //     new Pose2d(2, 7.8, Rotation2d.fromDegrees(90)), 
+    //     new PathConstraints(
+    //         3, 
+    //         3, 
+    //         Units.degreesToRadians(540), 
+    //         Units.degreesToRadians(720)),
+    //     0,
+    //     0));
+
+    // pathfind then follow path
+    ampAlign_Y.whileTrue(AutoBuilder.pathfindThenFollowPath(
+        PathPlannerPath.fromPathFile("Amp Align"), 
+        new PathConstraints(
+            3, // do we want it trying to align at 3m/s
+            3, 
+            Units.degreesToRadians(540), 
+            Units.degreesToRadians(720)),
+        3.0));
   }
 
   /**
