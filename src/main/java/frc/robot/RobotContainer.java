@@ -5,6 +5,14 @@
 package frc.robot;
 
 import java.io.IOException;
+import java.util.List;
+
+import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.drivesims.GyroSimulation;
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
+import org.ironmaple.simulation.drivesims.SwerveModuleSimulation.DRIVE_WHEEL_TYPE;
+import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -13,12 +21,16 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.hal.simulation.SimulatorJNI;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -48,6 +60,8 @@ import frc.robot.subsystems.LEDStrip;
 import frc.robot.subsystems.ShooterKraken;
 import frc.robot.subsystems.Transport;
 
+
+
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -63,6 +77,10 @@ public class RobotContainer {
   public static final AmpBar ampBar = AmpBar.getInstance();
   public static final ShooterKraken shooter = ShooterKraken.getInstance();
   public static final LEDStrip ledStrip = new LEDStrip(90, 0);
+
+  private final SwerveDriveSimulation swerveDriveSimulation;
+  public static boolean isSimulation = false;
+
 
 
   //Driver Controls
@@ -96,6 +114,8 @@ public class RobotContainer {
   public static final ShuffleboardTab autoTab = Shuffleboard.getTab("Auto");
   private SendableChooser<Command> autoChooser;
 
+  public static GyroSimulation gyroSimulation;
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. 
    * @throws IOException */
   public RobotContainer() throws IOException {
@@ -105,7 +125,32 @@ public class RobotContainer {
     configureAutoTab();
 
     aprilTagFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
-      
+
+    gyroSimulation = GyroSimulation.createPigeon2();
+
+    this.swerveDriveSimulation = new SwerveDriveSimulation(
+      59.9, // robot weight in kg
+      0.743, // track width in meters
+      0.686, // track length in meters 
+      0.794, // bumper width in meters
+      0.838, // bumper length in meters
+      SwerveModuleSimulation.getMark4( // creates a mark4 module
+          DCMotor.getKrakenX60(1), // drive motor is a Kraken x60
+          DCMotor.getKrakenX60(1), // steer motor is a Falcon 500
+          80, // current limit is 80 Amps
+          DRIVE_WHEEL_TYPE.RUBBER, // rubber wheels
+          3 // l3 gear ratio
+      ),
+      gyroSimulation, // the gyro simulation
+      new Pose2d(3, 3, new Rotation2d())); // initial starting pose on the field
+
+      // register the drivetrain simulation
+      SimulatedArena.getInstance().addDriveTrainSimulation(swerveDriveSimulation);  
+
+       // reset the field for auto (placing game-pieces in positions)
+       SimulatedArena.getInstance().resetFieldForAuto();
+
+
     // HttpCamera httpCamera = new HttpCamera("Limelight", "http://10.54.14.11:5800");
     // CameraServer.addCamera(httpCamera);
     // driverTab.add(httpCamera).withSize(6, 4).withPosition(4, 0);
@@ -221,5 +266,17 @@ public class RobotContainer {
   private void configureAutoTab() {
     autoChooser = AutoBuilder.buildAutoChooser("Two Meters");
     autoTab.add("Auto Chooser", autoChooser).withWidget(BuiltInWidgets.kComboBoxChooser).withSize(2, 1).withPosition(4, 0);
+  } 
+
+  public void updateSimulationField(){
+    if (swerveDriveSimulation != null) {
+      SimulatedArena.getInstance().simulationPeriodic();
+
+      Logger.recordOutput(
+          "FieldSimulation/RobotPosition", swerveDriveSimulation.getSimulatedDriveTrainPose());
+
+      final List<Pose3d> notes = SimulatedArena.getInstance().getGamePiecesByType("Note");
+      if (notes != null) Logger.recordOutput("FieldSimulation/Notes", notes.toArray(Pose3d[]::new));
+    }
   }
 }
