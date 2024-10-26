@@ -8,7 +8,15 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DriveSim extends SubsystemBase {
   /** Creates a new DriveSim. */
-  public DriveSim() {}
+  public DriveSim() {
+//     this.drive = new Drive(
+//         new GyroIOSim(this.gyroSimulation),
+//         new ModuleIOSim(this.swerveDriveSimulation.getModules()[0]),
+//         new ModuleIOSim(this.swerveDriveSimulation.getModules()[1]),
+//         new ModuleIOSim(this.swerveDriveSimulation.getModules()[2]),
+//         new ModuleIOSim(this.swerveDriveSimulation.getModules()[3])
+// );
+  }
 
   @Override
   public void periodic() {
