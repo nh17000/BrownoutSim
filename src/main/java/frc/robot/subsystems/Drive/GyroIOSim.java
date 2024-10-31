@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.Drive;
 
 import org.ironmaple.simulation.drivesims.GyroSimulation;
 
@@ -16,13 +16,13 @@ public class GyroIOSim implements GyroIO {
         this.gyroSimulation = gyroSimulation;
     }
     
-    @Override // specified by GroIOSim interface
-    public Rotation2d getGyroRotation() {
-        return this.gyroSimulation.getGyroReading();
-    }
+    // @Override // specified by GroIOSim interface
+    // public Rotation2d getGyroRotation() {
+    //     return this.gyroSimulation.getGyroReading();
+    // }
     
-    @Override // specified by GroIOSim interface
-    public double getGyroAngularVelocity() {
-        return this.gyroSimulation.getMeasuredAngularVelocityRadPerSec();
-    }
+    // @Override // specified by GroIOSim interface
+    // public double getGyroAngularVelocity() {
+    //     return this.gyroSimulation.getMeasuredAngularVelocityRadPerSec();
+    // }
 }

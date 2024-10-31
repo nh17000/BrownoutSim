@@ -14,7 +14,7 @@
 // Modified by 5516 "IRON MAPLE", original source:
 // https://github.com/Shenzhen-Robotics-Alliance/maple-sim
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.Drive;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.lib.util.ModuleIO;

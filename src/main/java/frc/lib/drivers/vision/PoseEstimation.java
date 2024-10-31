@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
-import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Drive.Drivetrain;
 
 public class PoseEstimation {
     private final SwerveDrivePoseEstimator poseEstimator;

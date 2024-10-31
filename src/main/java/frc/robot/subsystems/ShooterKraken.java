@@ -33,6 +33,7 @@ import frc.robot.RobotContainer;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.subsystems.Drive.Drivetrain;
 
 public class ShooterKraken extends SubsystemBase {
   private PearadoxTalonFX leftShooter;

@@ -19,6 +19,4 @@ public interface GyroIO {
   
   public default void updateInputs(GyroIOInputs inputs) {}
   
-  Rotation2d getGyroRotation();
-  double getGyroAngularVelocity();
 }
