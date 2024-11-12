@@ -5,7 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Transport;
+import frc.robot.subsystems.Transport.Transport;
 
 public class Shoot extends Command {
   private Transport transport = Transport.getInstance();

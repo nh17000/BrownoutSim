@@ -12,7 +12,7 @@ package frc.robot.subsystems.AmpBar;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 // import frc.lib.drivers.PearadoxSparkMax;
-// import frc.lib.util.SmarterDashboard;
+import frc.lib.util.SmarterDashboard;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.AmpBarConstants;
@@ -66,6 +66,7 @@ public class AmpBar extends SubsystemBase {
     // SmarterDashboard.putNumber("Amp Bar Position", ampBarEncoder.getPosition(), "Amp Bar");
     // SmarterDashboard.putNumber("Amp Bar Adjust", ampBarAdjust, "Amp Bar");
     // SmarterDashboard.putNumber("Amp Bar Current", ampBar.getOutputCurrent(), "Amp Bar");
+    SmarterDashboard.putString("Amp Bar Mode", ampBarMode.toString(), "Amp Bar");
   }
 
   public void setStowedMode(){

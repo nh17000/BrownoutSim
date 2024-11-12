@@ -2,66 +2,72 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.Shooter;
 
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
+// import com.revrobotics.CANSparkBase.ControlType;
+// import com.revrobotics.CANSparkBase.IdleMode;
+// import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import java.util.Map;
 
-import com.ctre.phoenix6.controls.VoltageOut;
-import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
+// import com.ctre.phoenix6.controls.VoltageOut;
+// import com.ctre.phoenix6.signals.NeutralModeValue;
+// import com.revrobotics.RelativeEncoder;
+// import com.revrobotics.SparkPIDController;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.util.Units;
+// import edu.wpi.first.math.geometry.Pose2d;
+// import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
+// import edu.wpi.first.networktables.NetworkTable;
+// import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.drivers.PearadoxSparkFlex;
-import frc.lib.drivers.PearadoxTalonFX;
+// import frc.lib.drivers.PearadoxSparkFlex;
+// import frc.lib.drivers.PearadoxTalonFX;
 import frc.lib.util.LerpTable;
 import frc.lib.util.SmarterDashboard;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
-import frc.robot.Constants.FieldConstants;
+// import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.ShooterConstants;
-import frc.robot.Constants.VisionConstants;
+// import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Drive.Drivetrain;
+import frc.robot.subsystems.Transport.Transport;
 
-public class ShooterKraken extends SubsystemBase {
-  private PearadoxTalonFX leftShooter;
-  private PearadoxTalonFX rightShooter;
+public class Shooter extends SubsystemBase {
+  // private PearadoxTalonFX leftShooter;
+  // private PearadoxTalonFX rightShooter;
   
-  private PearadoxSparkFlex pivot;
+  // private PearadoxSparkFlex pivot;
 
-  private RelativeEncoder pivotEncoder;
+  // private RelativeEncoder pivotEncoder;
 
-  private SparkPIDController pivotController;
+  // private SparkPIDController pivotController;
 
   private boolean zeroing = false;
 
-  private static final NetworkTable llTable = NetworkTableInstance.getDefault().getTable(VisionConstants.SHOOTER_LL_NAME);
+  // private static final NetworkTable llTable = NetworkTableInstance.getDefault().getTable(VisionConstants.SHOOTER_LL_NAME);
 
-  private double pivotPosition;
+  private double pivotIntendedPos;
   private double pivotAdjust = 0;
-  private double[] botpose_targetspace = new double[6];
+  // private double[] botpose_targetspace = new double[6];
   public static final Drivetrain drivetrain = Drivetrain.getInstance();
 
   private LerpTable pivotLerp = new LerpTable();
   private LerpTable shooterLerp = new LerpTable();
 
-  private static final ShooterKraken SHOOTER_KRAKEN = new ShooterKraken();
+  private static final Shooter SHOOTER_KRAKEN = 
+    new Shooter(Robot.isReal() ? new ShooterReal() : new ShooterSim());
 
-  public static ShooterKraken getInstance(){
+  public static Shooter getInstance(){
     return SHOOTER_KRAKEN;
   }
+
+  private ShooterIO io;
+  private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
 
   public enum ShooterMode{
     Auto, Manual, SourcePassing, AmpPassing, Speaker, Outtake
@@ -77,20 +83,20 @@ public class ShooterKraken extends SubsystemBase {
   private GenericEntry shooterModeEntry;
   private GenericEntry pivotAdjustEntry;
   private GenericEntry hasPriorityTargetEntry;
-  private VoltageOut voltage_request = new VoltageOut(0);
+  // private VoltageOut voltage_request = new VoltageOut(0);
 
-  public ShooterKraken() {
-    leftShooter = new PearadoxTalonFX(ShooterConstants.LEFT_SHOOTER_ID, NeutralModeValue.Coast, 50, true); 
+  public Shooter(ShooterIO io) {
+    // leftShooter = new PearadoxTalonFX(ShooterConstants.LEFT_SHOOTER_ID, NeutralModeValue.Coast, 50, true); 
     
-    rightShooter = new PearadoxTalonFX(ShooterConstants.RIGHT_SHOOTER_ID, NeutralModeValue.Coast, 50, false);
+    // rightShooter = new PearadoxTalonFX(ShooterConstants.RIGHT_SHOOTER_ID, NeutralModeValue.Coast, 50, false);
 
-    pivot = new PearadoxSparkFlex(ShooterConstants.PIVOT_ID, MotorType.kBrushless, IdleMode.kBrake, 50, true,
-      ShooterConstants.PIVOT_kP, ShooterConstants.PIVOT_kI, ShooterConstants.PIVOT_kD,
-      ShooterConstants.PIVOT_MIN_OUTPUT, ShooterConstants.PIVOT_MAX_OUTPUT);
+    // pivot = new PearadoxSparkFlex(ShooterConstants.PIVOT_ID, MotorType.kBrushless, IdleMode.kBrake, 50, true,
+    //   ShooterConstants.PIVOT_kP, ShooterConstants.PIVOT_kI, ShooterConstants.PIVOT_kD,
+    //   ShooterConstants.PIVOT_MIN_OUTPUT, ShooterConstants.PIVOT_MAX_OUTPUT);
 
-    pivotEncoder = pivot.getEncoder();
+    // pivotEncoder = pivot.getEncoder();
 
-    pivotController = pivot.getPIDController();
+    // pivotController = pivot.getPIDController();
 
     //Red
     pivotLerp.addPoint(52, 32.4); //0ft
@@ -140,24 +146,29 @@ public class ShooterKraken extends SubsystemBase {
     shooterModeEntry = driverTab.add("Shooter Mode", shooterMode.toString()).withPosition(2, 2).getEntry();
     pivotAdjustEntry = driverTab.add("Shooter Pivot Adjust", pivotAdjust).withPosition(3, 2).getEntry();
     hasPriorityTargetEntry = driverTab.add("Shooter Has Priority Target", hasPriorityTarget()).withPosition(2, 3).getEntry();
+
+    this.io = io;
   }
 
   @Override
   public void periodic() {
+    io.updateInputs(inputs); 
+    
     // This method will be called once per scheduler run
     SmarterDashboard.putString("Shooter Mode", getShooterMode().toString(), "Shooter");
-    SmarterDashboard.putNumber("Shooter Pivot Position", pivotEncoder.getPosition(), "Shooter");
-    SmarterDashboard.putNumber("Shooter Pivot Intended Position", pivotPosition, "Shooter");
-    SmarterDashboard.putNumber("Shooter Pivot Current", pivot.getOutputCurrent(), "Shooter");
+    SmarterDashboard.putNumber("Shooter Pivot Intended Position", pivotIntendedPos, "Shooter");
     SmarterDashboard.putNumber("Shooter Pivot Intended Angle", calculatePivotAngle(), "Shooter");  
     SmarterDashboard.putBoolean("Shooter Has Priority Target", hasPriorityTarget(), "Shooter"); 
     SmarterDashboard.putNumber("Shooter Pivot Adjust", pivotAdjust, "Shooter");
-    SmarterDashboard.putNumber("Left Shooter Speed", leftShooter.getVelocity().getValueAsDouble() * 60.0, "Shooter");
-    SmarterDashboard.putNumber("Right Shooter Speed", rightShooter.getVelocity().getValueAsDouble() * 60.0, "Shooter");
-    SmarterDashboard.putNumber("Right Shooter Stator Current", rightShooter.getStatorCurrent().getValueAsDouble(), "Shooter");
-    SmarterDashboard.putNumber("Left Shooter Stator Current", leftShooter.getStatorCurrent().getValueAsDouble(), "Shooter");
-    SmarterDashboard.putNumber("Right Shooter Supply Current", rightShooter.getSupplyCurrent().getValueAsDouble(), "Shooter");
-    SmarterDashboard.putNumber("Left Shooter Supply Current", leftShooter.getSupplyCurrent().getValueAsDouble(), "Shooter");
+
+    // SmarterDashboard.putNumber("Shooter Pivot Position", pivotEncoder.getPosition(), "Shooter");
+    // SmarterDashboard.putNumber("Shooter Pivot Current", pivot.getOutputCurrent(), "Shooter");
+    // SmarterDashboard.putNumber("Left Shooter Speed", leftShooter.getVelocity().getValueAsDouble() * 60.0, "Shooter");
+    // SmarterDashboard.putNumber("Right Shooter Speed", rightShooter.getVelocity().getValueAsDouble() * 60.0, "Shooter");
+    // SmarterDashboard.putNumber("Right Shooter Stator Current", rightShooter.getStatorCurrent().getValueAsDouble(), "Shooter");
+    // SmarterDashboard.putNumber("Left Shooter Stator Current", leftShooter.getStatorCurrent().getValueAsDouble(), "Shooter");
+    // SmarterDashboard.putNumber("Right Shooter Supply Current", rightShooter.getSupplyCurrent().getValueAsDouble(), "Shooter");
+    // SmarterDashboard.putNumber("Left Shooter Supply Current", leftShooter.getSupplyCurrent().getValueAsDouble(), "Shooter");
 
     shooterModeEntry.setString(shooterMode.toString());
     pivotAdjustEntry.setDouble(pivotAdjust);
@@ -174,55 +185,43 @@ public class ShooterKraken extends SubsystemBase {
     //   rightShooter.setControl(voltage_request.withOutput(0));
     // }
     if ((!transport.hasNote() && (((System.currentTimeMillis()) - transport.getRequestedShootTime()) > 100)) && !RobotContainer.opController.getRightBumper()) {
-      leftShooter.setControl(voltage_request.withOutput(0));
-      rightShooter.setControl(voltage_request.withOutput(0));
+      io.setShooterVolts(0.0, 0.0);
     }
     else if(RobotContainer.driverController.getLeftTriggerAxis() >= 0.95){ //Amp
-      leftShooter.setControl(voltage_request.withOutput(ShooterConstants.AMP_VOLTAGE));
-
-      rightShooter.setControl(voltage_request.withOutput(ShooterConstants.AMP_VOLTAGE));
+      io.setShooterVolts(ShooterConstants.AMP_VOLTAGE, ShooterConstants.AMP_VOLTAGE);
     }
     else if(shooterMode == ShooterMode.SourcePassing){
-      leftShooter.setControl(voltage_request.withOutput(ShooterConstants.PASSING_VOLTAGE));
-
-      rightShooter.setControl(voltage_request.withOutput(ShooterConstants.PASSING_VOLTAGE - ShooterConstants.LEFT_TO_RIGHT_VOLTAGE_OFFSET));
+      io.setShooterVolts(ShooterConstants.PASSING_VOLTAGE, 
+          ShooterConstants.PASSING_VOLTAGE - ShooterConstants.LEFT_TO_RIGHT_VOLTAGE_OFFSET);
     }
     else if(shooterMode == ShooterMode.AmpPassing){
-      leftShooter.setControl(voltage_request.withOutput(ShooterConstants.PASSING_VOLTAGE - 1));
-
-      rightShooter.setControl(voltage_request.withOutput(ShooterConstants.PASSING_VOLTAGE - ShooterConstants.LEFT_TO_RIGHT_VOLTAGE_OFFSET - 1));
+      io.setShooterVolts(ShooterConstants.PASSING_VOLTAGE - 1, 
+          ShooterConstants.PASSING_VOLTAGE - ShooterConstants.LEFT_TO_RIGHT_VOLTAGE_OFFSET - 1);
     }
     else if(shooterMode == ShooterMode.Speaker){
-      leftShooter.setControl(voltage_request.withOutput(ShooterConstants.SPEAKER_VOLTAGE));
-
-      rightShooter.setControl(voltage_request.withOutput(ShooterConstants.SPEAKER_VOLTAGE - ShooterConstants.LEFT_TO_RIGHT_VOLTAGE_OFFSET));
+      io.setShooterVolts(ShooterConstants.SPEAKER_VOLTAGE, 
+          ShooterConstants.SPEAKER_VOLTAGE - ShooterConstants.LEFT_TO_RIGHT_VOLTAGE_OFFSET);
     }
     else if(shooterMode == ShooterMode.Outtake){
-      leftShooter.setControl(voltage_request.withOutput(2.3));
-
-      rightShooter.setControl(voltage_request.withOutput(2.3));
+      io.setShooterVolts(2.3, 2.3);
     }
     else if(shooterMode == ShooterMode.Manual){
-      leftShooter.setControl(voltage_request.withOutput(leftShooterSpeedEntry.getDouble(7)));
-
-      rightShooter.setControl(voltage_request.withOutput(rightShooterSpeedEntry.getDouble(4)));
+      io.setShooterVolts(leftShooterSpeedEntry.getDouble(7), 
+          rightShooterSpeedEntry.getDouble(4));
     }
     else{
-      leftShooter.setControl(voltage_request.withOutput(shooterVoltage));
-
-      rightShooter.setControl(voltage_request.withOutput(shooterVoltage - ShooterConstants.LEFT_TO_RIGHT_VOLTAGE_OFFSET));
+      io.setShooterVolts(shooterVoltage, shooterVoltage - ShooterConstants.LEFT_TO_RIGHT_VOLTAGE_OFFSET);
     }
   }
 
   public void setShooterAuto(double speed){
     setAutoMode();
-    leftShooter.set(speed);
-    rightShooter.set(speed);
+    io.setShooterSpeed(speed, speed);
   }
 
   public void pivotHold(){
     if(zeroing){
-      pivot.set(-0.075);
+      io.setPivotSpeed(-0.075);
     }
     // else if(RobotContainer.climber.getClimbSequenceStep() >= 0){
     //   pivotController.setReference(
@@ -233,46 +232,31 @@ public class ShooterKraken extends SubsystemBase {
     //   pivotPosition = 2;
     // }
     else if(RobotContainer.driverController.getLeftTriggerAxis() >= 0.95){
-      pivotController.setReference(
-        ShooterConstants.AMP_PIVOT_POSITION,
-        ControlType.kPosition,
-        0);
+      io.setPivotReference(ShooterConstants.AMP_PIVOT_POSITION);
 
-      pivotPosition = ShooterConstants.AMP_PIVOT_POSITION;
+      pivotIntendedPos = ShooterConstants.AMP_PIVOT_POSITION;
     }
     else if(shooterMode == ShooterMode.SourcePassing || shooterMode == ShooterMode.AmpPassing){
-      pivotController.setReference(
-        ShooterConstants.PASSING_PIVOT_POSITION,
-        ControlType.kPosition,
-        0);
+      io.setPivotReference(ShooterConstants.PASSING_PIVOT_POSITION);
 
-      pivotPosition = ShooterConstants.PASSING_PIVOT_POSITION;
+      pivotIntendedPos = ShooterConstants.PASSING_PIVOT_POSITION;
     }
     else if(shooterMode == ShooterMode.Speaker){
-      pivotController.setReference(
-        ShooterConstants.SPEAKER_PIVOT_POSITION,
-        ControlType.kPosition,
-        0);
+      io.setPivotReference(ShooterConstants.SPEAKER_PIVOT_POSITION);
 
-      pivotPosition = ShooterConstants.SPEAKER_PIVOT_POSITION;
+      pivotIntendedPos = ShooterConstants.SPEAKER_PIVOT_POSITION;
     }
     else if(shooterMode == ShooterMode.Outtake){
-      pivotController.setReference(
-        11.5,
-        ControlType.kPosition,
-        0);
+      io.setPivotReference(11.5);
 
-      pivotPosition = 11.5;
+      pivotIntendedPos = 11.5;
     }
     else{
       if(shooterMode == ShooterMode.Auto){
         setPivotAngle(calculatePivotAngle());
       }
 
-      pivotController.setReference(
-        pivotPosition + pivotAdjust,
-        ControlType.kPosition,
-        0);
+      io.setPivotReference(pivotIntendedPos + pivotAdjust);
     }
 
     if(RobotContainer.opController.getPOV() == 0){
@@ -288,63 +272,41 @@ public class ShooterKraken extends SubsystemBase {
   }
 
   public void resetPivotEncoder(){
-    pivotEncoder.setPosition(0);
+    io.resetPivotEncoder();
   }
 
   public void setBrakeMode(boolean brake){
-    if(brake){
-      leftShooter.setNeutralMode(NeutralModeValue.Brake);
-      rightShooter.setNeutralMode(NeutralModeValue.Brake);
-      pivot.setIdleMode(IdleMode.kBrake);
+    io.setBrakeMode(brake);
+    // if(brake){
+    //   leftShooter.setNeutralMode(NeutralModeValue.Brake);
+    //   rightShooter.setNeutralMode(NeutralModeValue.Brake);
+      // pivot.setBrakeMode(IdleMode.kBrake);
 
-    }
-    else{
-      leftShooter.setNeutralMode(NeutralModeValue.Coast);
-      rightShooter.setNeutralMode(NeutralModeValue.Coast);
-    }
+    // }
+    // else{
+    //   leftShooter.setNeutralMode(NeutralModeValue.Coast);
+    //   rightShooter.setNeutralMode(NeutralModeValue.Coast);
+    // }
   }
 
   public void setPivot(double speed){
-    pivot.set(speed);
+    io.setPivotSpeed(speed);
   }
 
   public double getPivotCurrent(){
-    return pivot.getOutputCurrent();
+    return inputs.shooterPivotCurrent;
   }
 
   public double calculatePivotAngle(){
-    double x, z;
-
-    if(hasPriorityTarget()){
-      botpose_targetspace = llTable.getEntry("botpose_targetspace").getDoubleArray(new double[6]);
-      
-      x = Math.abs(botpose_targetspace[0]);
-      z = Math.abs(botpose_targetspace[2]) + 0.07;
-    }
-    else{
-      int tagID = isRedAlliance() ? 4 : 7;
-      Pose2d tagPose = RobotContainer.aprilTagFieldLayout.getTagPose(tagID).get().toPose2d();
-      Pose2d robotPose = RobotContainer.poseEstimation.getEstimatedPose();
-
-      z = tagPose.getX() - robotPose.getX() + 0.07;
-      x = (tagPose.getY() - 0.11) - robotPose.getY();
-    }
-
-    double hypot = Math.hypot(x, z);
-
-    double angle = Math.atan((FieldConstants.SPEAKER_HEIGHT - ShooterConstants.FLOOR_TO_SHOOTER) / hypot);
-    return Units.radiansToDegrees(angle);
+    return io.calculatePivotAngle(isRedAlliance());
   }
 
   public void setPivotAngle(double angle){
-    pivotPosition = pivotLerp.interpolate(angle);
+    pivotIntendedPos = pivotLerp.interpolate(angle);
   }
 
   public void setPivotPosition(){
-    pivotController.setReference(
-      pivotPosition + pivotAdjust,
-      ControlType.kPosition,
-      0);
+    io.setPivotReference(pivotIntendedPos + pivotAdjust);
   }
 
   // public double getNoteVelocity(){
@@ -352,20 +314,15 @@ public class ShooterKraken extends SubsystemBase {
   // }
 
   public boolean hasPriorityTarget(){
-    if(isRedAlliance()){
-      return llTable.getEntry("tid").getDouble(0) == 4;
-    }
-    else{
-      return llTable.getEntry("tid").getDouble(0) == 7;
-    }
+    return io.hasPriorityTarget(isRedAlliance());
   }
 
   public void setPipeline(int index){
-    llTable.getEntry("pipeline").setNumber(index);
+    io.setPipeline(index);
   }
 
-  public void setPivotPosition(double position){
-    pivotPosition = position;
+  public void setPivotIntendedPos(double position){
+    pivotIntendedPos = position;
   }
 
   public ShooterMode getShooterMode(){
@@ -405,11 +362,10 @@ public class ShooterKraken extends SubsystemBase {
   }
 
   public boolean readyToShoot() {
-    return (Math.abs(pivotPosition + pivotAdjust - pivotEncoder.getPosition()) <= 0.9);
+    return (Math.abs(pivotIntendedPos + pivotAdjust - inputs.shooterPivotPos) <= 0.9);
   }
 
   public void setCurrentLimit(double limit){
-    leftShooter.setCurrentLimit(limit);
-    rightShooter.setCurrentLimit(limit);
+    io.setCurrentLimit(limit);
   }
 }

@@ -53,12 +53,12 @@ import frc.robot.commands.ShooterHold;
 import frc.robot.commands.SourceAutoAlign;
 import frc.robot.commands.SwerveDrive;
 import frc.robot.subsystems.Climber;
-import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.LEDStrip;
-import frc.robot.subsystems.ShooterKraken;
-import frc.robot.subsystems.Transport;
 import frc.robot.subsystems.AmpBar.AmpBar;
 import frc.robot.subsystems.Drive.Drivetrain;
+import frc.robot.subsystems.Intake.Intake;
+import frc.robot.subsystems.Shooter.Shooter;
+import frc.robot.subsystems.Transport.Transport;
 
 
 
@@ -75,7 +75,7 @@ public class RobotContainer {
   public static final Transport transport = Transport.getInstance();
   // public static final Climber climber = Climber.getInstance();
   public static final AmpBar ampBar = AmpBar.getInstance();
-  public static final ShooterKraken shooter = ShooterKraken.getInstance();
+  public static final Shooter shooter = Shooter.getInstance();
   public static final LEDStrip ledStrip = new LEDStrip(90, 0);
 
   private final SwerveDriveSimulation swerveDriveSimulation;
@@ -236,12 +236,12 @@ public class RobotContainer {
     NamedCommands.registerCommand("Auto Align", new AutoAlign().withTimeout(0.5));
     NamedCommands.registerCommand("Source Auto Align", new SourceAutoAlign().withTimeout(0.7));
     NamedCommands.registerCommand("Shoot", new Shoot().withTimeout(0.2));
-    NamedCommands.registerCommand("Middle Set Pivot Position", new InstantCommand(() -> shooter.setPivotPosition(4.0)));
+    NamedCommands.registerCommand("Middle Set Pivot Position", new InstantCommand(() -> shooter.setPivotIntendedPos(4.0)));
     NamedCommands.registerCommand("Set Manual Mode", new InstantCommand(() -> shooter.setManualMode()));
     NamedCommands.registerCommand("Set Auto Mode", new InstantCommand(() -> shooter.setAutoMode()));
     NamedCommands.registerCommand("Set Shooter Auto", new InstantCommand(() -> shooter.setShooterAuto(0.85)));
     NamedCommands.registerCommand("Reset Heading", new InstantCommand(drivetrain::zeroHeading, drivetrain));
-    NamedCommands.registerCommand("Source Set Pivot Position", new InstantCommand(() -> shooter.setPivotPosition(11.5)));
+    NamedCommands.registerCommand("Source Set Pivot Position", new InstantCommand(() -> shooter.setPivotIntendedPos(11.5)));
     NamedCommands.registerCommand("Set Shooter Outtake", new InstantCommand(() -> shooter.setOuttakeMode()));
     NamedCommands.registerCommand("Turn Forward", new RunCommand(() -> drivetrain.turnToHeading(0, new Translation2d())).until(() -> Math.abs(drivetrain.getHeading()) < 1));
     NamedCommands.registerCommand("Turn to Angle 5", new RunCommand(() -> drivetrain.turnToHeading(5, new Translation2d())).until(() -> Math.abs(drivetrain.getHeading() - 5) < 1));

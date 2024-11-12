@@ -9,13 +9,13 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.ShooterKraken;
 import frc.robot.subsystems.Drive.Drivetrain;
-import frc.robot.subsystems.ShooterKraken.ShooterMode;
+import frc.robot.subsystems.Shooter.Shooter;
+import frc.robot.subsystems.Shooter.Shooter.ShooterMode;
 
 public class SwerveDrive extends Command {
   private Drivetrain drivetrain = Drivetrain.getInstance();
-  private ShooterKraken shooter = ShooterKraken.getInstance();
+  private Shooter shooter = Shooter.getInstance();
   private XboxController driverController = RobotContainer.driverController;
   
 

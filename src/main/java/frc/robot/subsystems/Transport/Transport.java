@@ -2,59 +2,67 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.Transport;
 
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
+// import com.revrobotics.CANSparkBase.IdleMode;
+// import com.revrobotics.CANSparkLowLevel.MotorType;
 
-import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
-import edu.wpi.first.wpilibj.DigitalInput;
+// import edu.wpi.first.math.filter.Debouncer;
+// import edu.wpi.first.math.filter.Debouncer.DebounceType;
+// import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.lib.drivers.PearadoxSparkFlex;
-import frc.lib.util.SmarterDashboard;
-import frc.robot.Constants.TransportConstants;
+// import frc.lib.drivers.PearadoxSparkFlex;
+// import frc.lib.util.SmarterDashboard;
+// import frc.robot.Constants.TransportConstants;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 
 public class Transport extends SubsystemBase {
-  private PearadoxSparkFlex transportMotor;
+  // private PearadoxSparkFlex transportMotor;
 
-  private DigitalInput irSensor;
-  private Debouncer debouncer;
+  // private DigitalInput irSensor;
+  // private Debouncer debouncer;
 
   private boolean isHolding = true;
   private boolean rumbled = false;
 
   private long shootTime = 0;
 
-  private static final Transport transport = new Transport();
+  private static final Transport TRANSPORT = 
+    new Transport(Robot.isReal() ? new TransportReal() : new TransportReal());
 
   public static Transport getInstance(){
-    return transport;
+    return TRANSPORT;
   }
+  
+  private TransportIO io;
+  private final TransportIOInputsAutoLogged inputs = new TransportIOInputsAutoLogged();
 
   /** Creates a new Transport. */
-  public Transport() {
-    transportMotor = new PearadoxSparkFlex(TransportConstants.TRANSPORT_ID, MotorType.kBrushless, IdleMode.kBrake, 60, false);
+  public Transport(TransportIO io) {
+    // transportMotor = new PearadoxSparkFlex(TransportConstants.TRANSPORT_ID, MotorType.kBrushless, IdleMode.kBrake, 60, false);
 
-    irSensor = new DigitalInput(TransportConstants.IR_SENSOR_CHANNEL);
-    debouncer = new Debouncer(0.2, DebounceType.kFalling);
+    // irSensor = new DigitalInput(TransportConstants.IR_SENSOR_CHANNEL);
+    // debouncer = new Debouncer(0.2, DebounceType.kFalling);
+    this.io = io;
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmarterDashboard.putBoolean("Ir Sensor", hasNote(), "Transport");
-    SmarterDashboard.putNumber("Transport Current", transportMotor.getOutputCurrent(), "Transport");
+    // SmarterDashboard.putBoolean("Ir Sensor", hasNote(), "Transport");
+    // SmarterDashboard.putNumber("Transport Current", transportMotor.getOutputCurrent(), "Transport");
 
     // if(RobotContainer.climber.getClimbSequenceStep() >= 3){
     //   transportShoot();
     // }
+    io.updateInputs(inputs);
+
     if(isHolding){
       if(hasNote()){
         transportStop();
@@ -74,33 +82,28 @@ public class Transport extends SubsystemBase {
   }
 
   public void transportHold(){
-    transportMotor.set(0.35);
+    io.set(0.35);
   }
 
   public void transportOut(){
-    transportMotor.set(-0.4);
+    io.set(-0.4);
   }
 
   public void transportStop(){
-    transportMotor.set(0);
+    io.set(0);
   }
 
   public void transportShoot(){    
     shootTime = System.currentTimeMillis();
-    transportMotor.set(1);
+    io.set(1);
   }
 
   public void setBrakeMode(boolean brake){
-    if(brake){
-      transportMotor.setIdleMode(IdleMode.kBrake);
-    }
-    else{
-      transportMotor.setIdleMode(IdleMode.kCoast);
-    }
+    io.setBrakeMode(brake);
   }
 
   public boolean hasNote(){
-    return debouncer.calculate(!irSensor.get());
+    return inputs.hasNote;
   }
 
   public long getRequestedShootTime(){
