@@ -89,4 +89,15 @@ public class Intake extends SubsystemBase {
   public boolean hasTarget(){
     return inputs.hasTarget;
   }
+
+  public boolean obtainNoteFromIntakeSim() {
+    if (Robot.isReal()) return false;
+    return io.obtainGamePieceFromIntake();
+  }
+
+  // because the intake sim is 
+  public boolean simHasNote() {
+    if (Robot.isReal()) return false;
+    return io.simHasNote();
+  }
 }

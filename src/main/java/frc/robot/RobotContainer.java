@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
 import org.ironmaple.simulation.drivesims.GyroSimulation;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
@@ -78,7 +79,7 @@ public class RobotContainer {
   public static final Shooter shooter = Shooter.getInstance();
   public static final LEDStrip ledStrip = new LEDStrip(90, 0);
 
-  private final SwerveDriveSimulation swerveDriveSimulation;
+  private static SwerveDriveSimulation swerveDriveSimulation;
   public static boolean isSimulation = false;
 
 
@@ -278,5 +279,9 @@ public class RobotContainer {
       final List<Pose3d> notes = SimulatedArena.getInstance().getGamePiecesByType("Note");
       if (notes != null) Logger.recordOutput("FieldSimulation/Notes", notes.toArray(Pose3d[]::new));
     }
+  }
+
+  public static AbstractDriveTrainSimulation getDriveSim() {
+    return swerveDriveSimulation;
   }
 }

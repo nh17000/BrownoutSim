@@ -6,55 +6,73 @@ import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
 import org.ironmaple.simulation.seasonspecific.crescendo2024.CrescendoNoteOnField;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import frc.robot.RobotContainer;
 
 public class IntakeSim implements IntakeIO {
-  // TODO: update to 2025 wpilib to use newer versions of maple sim
-  // private final IntakeSimulation intakeSim; 
+  private final IntakeSimulation intakeSim; 
+  private static final AbstractDriveTrainSimulation driveSim = RobotContainer.getDriveSim();
 
-  public IntakeSim(/*SimulatedArena arena, AbstractDriveTrainSimulation drivetrain*/) {
-    // intakeSim = new IntakeSimulation( // create intake simulation with no extension
-    //   arena,
-    //   drivetrain,
-    //   0.6, // check onshape for width of beta's intake
-    //   IntakeSimulation.IntakeSide.BACK, 
-    //   1
-    // );
+  // This is an indefinite integral of the intake motor voltage since the note has been in the
+  // intake.
+  // This approximates the position of the note in the intake.
+  private double intakeVoltageIntegralSinceNoteTaken = 0.0;
+  private double intakeVoltage = 0.0;
+
+  public IntakeSim() {
+    intakeSim = new IntakeSimulation(
+      "Note",
+      driveSim,
+      0.6, // check onshape for width of beta's intake
+      IntakeSimulation.IntakeSide.BACK, 
+      1
+    );
+    intakeSim.register();
   }
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
-    // // gamePiecesInIntakeCount shows the amount of game pieces in the intake, we store this in the
-    // // inputs
-    // inputs.noteDetected = intakeSimulation.getGamePiecesAmount() != 0;
+    // gamePiecesInIntakeCount shows the amount of game pieces in the intake, we store this in the
+    // inputs
+    boolean noteDetected = intakeSim.getGamePiecesAmount() != 0;
 
-    // // if the intake voltage is higher than 2 volts, it is considered running
-    // if (intakeVoltage > 4) intakeSimulation.startIntake();
-    // // otherwise, it's stopped
-    // else intakeSimulation.stopIntake();
+    // if the intake voltage is higher than 2 volts, it is considered running
+    if (intakeVoltage > 4) intakeSim.startIntake();
+    // otherwise, it's stopped
+    else intakeSim.stopIntake();
 
-    // // if the there is note, we do an integral to the voltage to approximate the position of the
-    // // note in the intake
-    // if (inputs.noteDetected) intakeVoltageIntegralSinceNoteTaken += 0.02 * intakeVoltage;
-    // // if the note is gone, we clear the integral
-    // else intakeVoltageIntegralSinceNoteTaken = 0.0;
+    // if the there is note, we do an integral to the voltage to approximate the position of the
+    // note in the intake
+    if (noteDetected) intakeVoltageIntegralSinceNoteTaken += 0.02 * intakeVoltage;
+    // if the note is gone, we clear the integral
+    else intakeVoltageIntegralSinceNoteTaken = 0.0;
 
-    // // if the integral is negative, we get rid of the note
-    // if (intakeVoltageIntegralSinceNoteTaken < 0 && intakeSimulation.obtainGamePieceFromIntake())
-    //   // splits the note out by adding it on field
-    //   SimulatedArena.getInstance()
-    //       .addGamePiece(
-    //           new CrescendoNoteOnField(
-    //               driveTrain
-    //                   .getSimulatedDriveTrainPose()
-    //                   .getTranslation()
-    //                   .plus(
-    //                       new Translation2d(-0.4, 0)
-    //                           .rotateBy(driveTrain.getSimulatedDriveTrainPose().getRotation()))));
-    // // if the intake have been running positive volts since the note touches the intake, it will
-    // // touch the fly wheels
+    // if the integral is negative, we get rid of the note
+    if (intakeVoltageIntegralSinceNoteTaken < 0 && intakeSim.obtainGamePieceFromIntake())
+      // splits the note out by adding it on field
+      SimulatedArena.getInstance()
+          .addGamePiece(
+              new CrescendoNoteOnField(
+                  driveSim
+                      .getSimulatedDriveTrainPose()
+                      .getTranslation()
+                      .plus(
+                          new Translation2d(-0.4, 0)
+                              .rotateBy(driveSim.getSimulatedDriveTrainPose().getRotation()))));
+    // if the intake have been running positive volts since the note touches the intake, it will
+    // touch the fly wheels
     // else if (intakeVoltageIntegralSinceNoteTaken > 12 * 0.1
-    //     && intakeSimulation.obtainGamePieceFromIntake())
+    //     && intakeSim.obtainGamePieceFromIntake())
     //   // launch the note by calling the shoot note call back
     //   passNoteToFlyWheelsCall.run();
+  }
+
+  @Override
+  public boolean obtainGamePieceFromIntake() {
+    return intakeSim.obtainGamePieceFromIntake();
+  }
+
+  @Override
+  public boolean simHasNote() {
+    return intakeSim.getGamePiecesAmount() != 0;
   }
 }

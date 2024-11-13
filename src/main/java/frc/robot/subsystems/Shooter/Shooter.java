@@ -368,4 +368,8 @@ public class Shooter extends SubsystemBase {
   public void setCurrentLimit(double limit){
     io.setCurrentLimit(limit);
   }
+
+  public void shootNote() {
+    io.shootNote();
+  }
 }
