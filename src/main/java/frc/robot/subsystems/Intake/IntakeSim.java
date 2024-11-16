@@ -6,19 +6,19 @@ import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
 import org.ironmaple.simulation.seasonspecific.crescendo2024.CrescendoNoteOnField;
 
 import edu.wpi.first.math.geometry.Translation2d;
-import frc.robot.RobotContainer;
 
 public class IntakeSim implements IntakeIO {
   private final IntakeSimulation intakeSim; 
-  private static final AbstractDriveTrainSimulation driveSim = RobotContainer.getDriveSim();
 
+  private final AbstractDriveTrainSimulation driveSim;
+
+  private double intakeVoltage = 0.0;
   // This is an indefinite integral of the intake motor voltage since the note has been in the
   // intake.
   // This approximates the position of the note in the intake.
   private double intakeVoltageIntegralSinceNoteTaken = 0.0;
-  private double intakeVoltage = 0.0;
 
-  public IntakeSim() {
+  public IntakeSim(AbstractDriveTrainSimulation driveSim) {
     intakeSim = new IntakeSimulation(
       "Note",
       driveSim,
@@ -27,6 +27,8 @@ public class IntakeSim implements IntakeIO {
       1
     );
     intakeSim.register();
+    
+    this.driveSim = driveSim;
   }
 
   @Override

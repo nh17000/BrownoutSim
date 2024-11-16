@@ -16,7 +16,6 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 // import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
-import frc.robot.RobotContainer;
 import frc.robot.Constants.ShooterConstants;
 
 public class ShooterSim implements ShooterIO {
@@ -33,15 +32,17 @@ public class ShooterSim implements ShooterIO {
 
   private final PIDController pivotController;
 
-  private final AbstractDriveTrainSimulation driveSim = RobotContainer.getDriveSim(); 
+  private final AbstractDriveTrainSimulation driveSim; 
 
   private final Translation3d SHOOTER_TRANSLATION_ON_ROBOT = new Translation3d(-0.108, 0, -0.154);  
 
   private double volts;
 
-  public ShooterSim() {
+  public ShooterSim(AbstractDriveTrainSimulation driveSim) {
     pivotSim.setState(-85, 0);
     pivotController = new PIDController(0, 0, 0);
+    
+    this.driveSim = driveSim;
   }
 
   @Override

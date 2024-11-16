@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 // import frc.robot.Constants.VisionConstants;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.IntakeConstants;
 
 public class Intake extends SubsystemBase {
   // private PearadoxSparkMax utbRoller;
@@ -33,10 +34,21 @@ public class Intake extends SubsystemBase {
 
   // private static final NetworkTable llTable = NetworkTableInstance.getDefault().getTable(VisionConstants.INTAKE_LL_NAME);
 
-  private static final Intake INTAKE = 
-    new Intake(Robot.isReal() ? new IntakeReal() : new IntakeSim());
+  private static Intake INTAKE;
 
-  public static Intake getInstance(){
+  public static Intake createInstance(IntakeIO io) {
+    if (INTAKE == null) {
+      INTAKE = new Intake(io);
+    } else {
+      throw new IllegalStateException("Intake instance already created!");
+    }
+    return INTAKE;
+  }
+
+  public static Intake getInstance() {
+    if (INTAKE == null) {
+      throw new IllegalStateException("Intake instance not created");
+    }
     return INTAKE;
   }
   
@@ -44,7 +56,7 @@ public class Intake extends SubsystemBase {
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
   /** Creates a new Intake. */
-  public Intake(IntakeIO io) {
+  private Intake(IntakeIO io) {
     // utbRoller = new PearadoxSparkMax(IntakeConstants.UTB_ROLLER_ID, MotorType.kBrushless, IdleMode.kCoast, 80, false);
     // debouncer = new Debouncer(0.5, DebounceType.kRising);
     this.io = io;
@@ -57,21 +69,21 @@ public class Intake extends SubsystemBase {
 
     io.updateInputs(inputs);
 
-    if(!rumbled && inputs.intakeCurrent > 40){
+    if(!rumbled && inputs.intakeCurrent > IntakeConstants.RUMBLE_AT_CURRENT){
       CommandScheduler.getInstance().schedule(rumbleController());
       rumbled = true;
     }
-    if(rumbled && !(inputs.intakeCurrent > 40)){
+    if(rumbled && !(inputs.intakeCurrent > IntakeConstants.RUMBLE_AT_CURRENT)){
       rumbled = false;
     }
   }
 
   public void utbIntakeIn(){
-    io.set(0.8);
+    io.set(IntakeConstants.INTAKE_IN_SPEED);
   }
 
   public void utbIntakeOut(){
-    io.set(-0.7);
+    io.set(IntakeConstants.INTAKE_OUT_SPEED);
   }
 
   public void utbIntakeStop(){

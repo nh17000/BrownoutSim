@@ -29,7 +29,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 // import frc.lib.drivers.PearadoxTalonFX;
 import frc.lib.util.LerpTable;
 import frc.lib.util.SmarterDashboard;
-import frc.robot.Robot;
 import frc.robot.RobotContainer;
 // import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.ShooterConstants;
@@ -59,10 +58,21 @@ public class Shooter extends SubsystemBase {
   private LerpTable pivotLerp = new LerpTable();
   private LerpTable shooterLerp = new LerpTable();
 
-  private static final Shooter SHOOTER_KRAKEN = 
-    new Shooter(Robot.isReal() ? new ShooterReal() : new ShooterSim());
+  private static Shooter SHOOTER_KRAKEN;
+
+  public static Shooter createInstance(ShooterIO io) {
+    if (SHOOTER_KRAKEN == null) {
+      SHOOTER_KRAKEN = new Shooter(io);
+    } else {
+      throw new IllegalStateException("Shooter instance already created!");
+    }
+    return SHOOTER_KRAKEN;
+  }
 
   public static Shooter getInstance(){
+    if (SHOOTER_KRAKEN == null) {
+      throw new IllegalStateException("Shooter instance not created");
+    }
     return SHOOTER_KRAKEN;
   }
 
@@ -203,7 +213,7 @@ public class Shooter extends SubsystemBase {
           ShooterConstants.SPEAKER_VOLTAGE - ShooterConstants.LEFT_TO_RIGHT_VOLTAGE_OFFSET);
     }
     else if(shooterMode == ShooterMode.Outtake){
-      io.setShooterVolts(2.3, 2.3);
+      io.setShooterVolts(ShooterConstants.OUTAKE_VOLTAGE, ShooterConstants.OUTAKE_VOLTAGE);
     }
     else if(shooterMode == ShooterMode.Manual){
       io.setShooterVolts(leftShooterSpeedEntry.getDouble(7), 
@@ -221,7 +231,7 @@ public class Shooter extends SubsystemBase {
 
   public void pivotHold(){
     if(zeroing){
-      io.setPivotSpeed(-0.075);
+      io.setPivotSpeed(ShooterConstants.PIVOT_ZEROING_SPEED);
     }
     // else if(RobotContainer.climber.getClimbSequenceStep() >= 0){
     //   pivotController.setReference(
@@ -247,9 +257,9 @@ public class Shooter extends SubsystemBase {
       pivotIntendedPos = ShooterConstants.SPEAKER_PIVOT_POSITION;
     }
     else if(shooterMode == ShooterMode.Outtake){
-      io.setPivotReference(11.5);
+      io.setPivotReference(ShooterConstants.PIVOT_OUTAKE_POSITION);
 
-      pivotIntendedPos = 11.5;
+      pivotIntendedPos = ShooterConstants.PIVOT_OUTAKE_POSITION;
     }
     else{
       if(shooterMode == ShooterMode.Auto){

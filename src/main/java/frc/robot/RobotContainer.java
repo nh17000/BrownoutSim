@@ -58,7 +58,11 @@ import frc.robot.subsystems.LEDStrip;
 import frc.robot.subsystems.AmpBar.AmpBar;
 import frc.robot.subsystems.Drive.Drivetrain;
 import frc.robot.subsystems.Intake.Intake;
+import frc.robot.subsystems.Intake.IntakeReal;
+import frc.robot.subsystems.Intake.IntakeSim;
 import frc.robot.subsystems.Shooter.Shooter;
+import frc.robot.subsystems.Shooter.ShooterReal;
+import frc.robot.subsystems.Shooter.ShooterSim;
 import frc.robot.subsystems.Transport.Transport;
 
 
@@ -72,14 +76,14 @@ import frc.robot.subsystems.Transport.Transport;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   public static final Drivetrain drivetrain = Drivetrain.getInstance();
-  public static final Intake intake = Intake.getInstance();
+  public static Intake intake;
   public static final Transport transport = Transport.getInstance();
   // public static final Climber climber = Climber.getInstance();
   public static final AmpBar ampBar = AmpBar.getInstance();
-  public static final Shooter shooter = Shooter.getInstance();
+  public static Shooter shooter;
   public static final LEDStrip ledStrip = new LEDStrip(90, 0);
 
-  private static SwerveDriveSimulation swerveDriveSimulation;
+  private final SwerveDriveSimulation swerveDriveSimulation;
   public static boolean isSimulation = false;
 
 
@@ -144,6 +148,12 @@ public class RobotContainer {
       ),
       gyroSimulation, // the gyro simulation
       new Pose2d(3, 3, new Rotation2d())); // initial starting pose on the field
+
+      intake = Intake.createInstance(
+        Robot.isReal() ? new IntakeReal() : new IntakeSim(swerveDriveSimulation));
+
+      shooter = Shooter.createInstance(
+        Robot.isReal() ? new ShooterReal() : new ShooterSim(swerveDriveSimulation));
 
       // register the drivetrain simulation
       SimulatedArena.getInstance().addDriveTrainSimulation(swerveDriveSimulation);  
@@ -279,9 +289,5 @@ public class RobotContainer {
       final List<Pose3d> notes = SimulatedArena.getInstance().getGamePiecesByType("Note");
       if (notes != null) Logger.recordOutput("FieldSimulation/Notes", notes.toArray(Pose3d[]::new));
     }
-  }
-
-  public static AbstractDriveTrainSimulation getDriveSim() {
-    return swerveDriveSimulation;
   }
 }

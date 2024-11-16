@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 // import frc.robot.Constants.TransportConstants;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.TransportConstants;
 
 public class Transport extends SubsystemBase {
   // private PearadoxSparkFlex transportMotor;
@@ -82,11 +83,11 @@ public class Transport extends SubsystemBase {
   }
 
   public void transportHold(){
-    io.set(0.35);
+    io.set(TransportConstants.TRANSPORT_HOLD_SPEED);
   }
 
   public void transportOut(){
-    io.set(-0.4);
+    io.set(TransportConstants.TRANSPORT_OUT_SPEED);
   }
 
   public void transportStop(){
@@ -95,7 +96,7 @@ public class Transport extends SubsystemBase {
 
   public void transportShoot(){    
     shootTime = System.currentTimeMillis();
-    io.set(1);
+    io.set(TransportConstants.TRANSPORT_SHOOT_SPEED);
   }
 
   public void setBrakeMode(boolean brake){

@@ -109,6 +109,11 @@ public final class Constants {
 
   public static final class IntakeConstants{
     public static final int UTB_ROLLER_ID = 21;
+
+    public static final double INTAKE_IN_SPEED = 0.8; 
+    public static final double INTAKE_OUT_SPEED = -0.7; 
+
+    public static final double RUMBLE_AT_CURRENT = 40.0;
   }
 
 
@@ -140,11 +145,15 @@ public final class Constants {
     public static final double SPEAKER_PIVOT_POSITION = 32.4;
     public static final double TRAP_PIVOT_POSITION = 58;
     public static final double FLOOR_TO_SHOOTER = Units.inchesToMeters(7); //TODO: floor to shooter length
+    public static final double PIVOT_OUTAKE_POSITION = 11.5;
 
     public static final double PASSING_VOLTAGE = 6.4;
     public static final double AMP_VOLTAGE = 4;
     public static final double SPEAKER_VOLTAGE = 5.5;
     public static final double TRAP_VOLTAGE = 4.3;
+    public static final double OUTAKE_VOLTAGE = 2.3;
+
+    public static final double PIVOT_ZEROING_SPEED = -0.075;
 
     public static final double LEFT_TO_RIGHT_VOLTAGE_OFFSET = 2.5;
   }
@@ -153,6 +162,10 @@ public final class Constants {
     public static final int TRANSPORT_ID = 22;
 
     public static final int IR_SENSOR_CHANNEL = 0;
+
+    public static final double TRANSPORT_HOLD_SPEED = 0.35;
+    public static final double TRANSPORT_OUT_SPEED = -0.4;
+    public static final double TRANSPORT_SHOOT_SPEED = 1.0;
   }
 
   public static final class ClimberConstants{
