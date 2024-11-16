@@ -2,13 +2,14 @@ package frc.robot.subsystems.Drive.Module;
 
 import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
 
-import edu.wpi.first.math.controller.PIDController;;
+import edu.wpi.first.math.controller.PIDController;
 
 public class ModuleSim implements ModuleIO {
   private final SwerveModuleSimulation moduleSim;
   private final int index;
 
   private final PIDController turnFeedback;
+  private double turnRelativeOffset = Double.MIN_VALUE;
 
   public ModuleSim(SwerveModuleSimulation moduleSim, int index) {
     this.moduleSim = moduleSim;
@@ -29,7 +30,11 @@ public class ModuleSim implements ModuleIO {
     inputs.turnVelocity = moduleSim.getSteerRelativeEncoderSpeedRadPerSec();
 
     inputs.absoluteWheelAngleDeg = moduleSim.getSteerAbsoluteFacing().getDegrees();
-    inputs.turnAngle = (inputs.absoluteWheelAngleDeg) * 2 * Math.PI;
+    if (turnRelativeOffset == Double.MIN_VALUE && inputs.absoluteWheelAngleDeg != 0.0) {
+      turnRelativeOffset = inputs.absoluteWheelAngleDeg + inputs.turnPosition;
+    }
+    inputs.turnAngle = inputs.absoluteWheelAngleDeg - turnRelativeOffset;
+
   }
 
   @Override
