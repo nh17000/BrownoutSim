@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.Drive;
 
+import org.littletonrobotics.junction.Logger;
+
 // import java.text.DecimalFormat;
 
 // import com.ctre.phoenix6.hardware.Pigeon2;
@@ -74,6 +76,8 @@ public class Drivetrain extends SubsystemBase {
   // private GenericEntry angularSpeedEntry;
 
   private static Drivetrain DRIVETRAIN;
+
+  private SwerveModuleState[] states = new SwerveModuleState[4];
 
   public static Drivetrain createInstance(GyroIO gyroIO,
       ModuleIO flModuleIO,
@@ -159,10 +163,16 @@ public class Drivetrain extends SubsystemBase {
     SmarterDashboard.putBoolean("Ready To Shoot", readyToShoot(), "Drivetrain");
     SmarterDashboard.putString("Tag 7 Pose", RobotContainer.aprilTagFieldLayout.getTagPose(7).get().toPose2d().toString(), "Drivetrain");
 
-    SmarterDashboard.putData("Left Front Module State", leftFront.getState(), "Drivetrain");
-    SmarterDashboard.putData("Right Front Module State", rightFront.getState(), "Drivetrain");
-    SmarterDashboard.putData("Left Back Module State", leftBack.getState(), "Drivetrain");
-    SmarterDashboard.putData("Right Back Module State", rightBack.getState(), "Drivetrain");
+    states[0] = leftFront.getState();
+    states[1] = rightFront.getState();
+    states[2] = leftBack.getState();
+    states[3] = rightBack.getState(); 
+    Logger.recordOutput("a", states);
+
+    SmarterDashboard.putData("Left Front Module State", states[0], "Drivetrain");
+    SmarterDashboard.putData("Right Front Module State", states[1], "Drivetrain");
+    SmarterDashboard.putData("Left Back Module State", states[2], "Drivetrain");
+    SmarterDashboard.putData("Right Back Module State", states[3], "Drivetrain");
     SmarterDashboard.putData("Odometry", getPose(), "Drivetrain");
 
     leftFrontStateEntry.setString(leftFront.getState().toString());

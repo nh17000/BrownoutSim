@@ -34,7 +34,7 @@ public class ShooterSim implements ShooterIO {
 
   private final AbstractDriveTrainSimulation driveSim; 
 
-  private final Translation3d SHOOTER_TRANSLATION_ON_ROBOT = new Translation3d(-0.108, 0, -0.154);  
+  private final Translation3d SHOOTER_TRANSLATION_ON_ROBOT = new Translation3d(0.108, 0, 0.154);  
 
   private double volts;
 

@@ -24,7 +24,7 @@ public class AmpBarSim implements AmpBarIO {
 
   private final PIDController controller;
 
-  private final Translation3d AMP_BAR_TRANSLATION_ON_ROBOT = new Translation3d(-0.068, 0, -0.632);
+  private final Translation3d AMP_BAR_TRANSLATION_ON_ROBOT = new Translation3d(0.068, 0, 0.632);
 
   public AmpBarSim() {
     controller = new PIDController(0, 0, 0);
@@ -36,17 +36,17 @@ public class AmpBarSim implements AmpBarIO {
     armSim.update(0.02);
     inputs.ampBarCurrent = armSim.getCurrentDrawAmps();
     // TODO: convert encoder values (roughly -20 to -1) to the actual angle of the arm (-135 to 60)
-    inputs.ampBarPos = armSim.getAngleRads(); 
+    inputs.ampBarPos = -armSim.getAngleRads(); 
 
     final Pose3d ampBarPoseToRobot =
-                new Pose3d(AMP_BAR_TRANSLATION_ON_ROBOT, new Rotation3d(0, armSim.getAngleRads(), 0));
+                new Pose3d(AMP_BAR_TRANSLATION_ON_ROBOT, new Rotation3d(0, -armSim.getAngleRads(), 0));
     Logger.recordOutput("MechanismPoses/Amp Bar", new Pose3d[] {ampBarPoseToRobot});
   }
   
   @Override
   public void setReference(double reference) {
     armSim.setInputVoltage(MathUtil.clamp(
-      controller.calculate(armSim.getAngleRads(), reference), -12, 12));
-    controller.reset(); // ?
+      controller.calculate(-armSim.getAngleRads(), reference), -12, 12));
+    // controller.reset(); // ?
   }
 }
