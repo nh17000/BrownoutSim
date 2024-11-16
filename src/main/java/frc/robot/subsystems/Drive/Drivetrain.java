@@ -4,9 +4,9 @@
 
 package frc.robot.subsystems.Drive;
 
-import java.text.DecimalFormat;
+// import java.text.DecimalFormat;
 
-import com.ctre.phoenix6.hardware.Pigeon2;
+// import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -33,6 +33,10 @@ import frc.lib.util.SmarterDashboard;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.subsystems.Drive.Gyro.GyroIO;
+import frc.robot.subsystems.Drive.Gyro.GyroIOInputsAutoLogged;
+import frc.robot.subsystems.Drive.Module.ModuleIO;
+import frc.robot.subsystems.Drive.Module.SwerveModule;
 
 public class Drivetrain extends SubsystemBase {
   private SwerveModule leftFront;
@@ -47,7 +51,8 @@ public class Drivetrain extends SubsystemBase {
   private PIDController alignPIDController;
   private PIDController noteAlignPIDController;
 
-  private Pigeon2 gyro;
+  private GyroIO gyroIO;
+  private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
 
   private static final NetworkTable shooterllTable = NetworkTableInstance.getDefault().getTable(VisionConstants.SHOOTER_LL_NAME);
   public static final NetworkTable intakellTable = NetworkTableInstance.getDefault().getTable(VisionConstants.INTAKE_LL_NAME);
@@ -66,21 +71,41 @@ public class Drivetrain extends SubsystemBase {
   private GenericEntry leftBackStateEntry;
   private GenericEntry rightBackStateEntry;
   private GenericEntry robotAngleEntry;
-  private GenericEntry angularSpeedEntry;
+  // private GenericEntry angularSpeedEntry;
 
-  private static final Drivetrain DRIVETRAIN = new Drivetrain();
+  private static Drivetrain DRIVETRAIN;
 
-  /* 
-  *<p> 
-  *This returns the Drivetrain instead of creating a new subsystem
-  *@return new Drivetrain
-  */
-  public static Drivetrain getInstance(){
+  public static Drivetrain createInstance(GyroIO gyroIO,
+      ModuleIO flModuleIO,
+      ModuleIO frModuleIO,
+      ModuleIO blModuleIO,
+      ModuleIO brModuleIO) {
+    if (DRIVETRAIN == null) {
+      DRIVETRAIN = new Drivetrain(
+        gyroIO,
+        flModuleIO,
+        frModuleIO,
+        blModuleIO,
+        brModuleIO);
+    } else {
+      throw new IllegalStateException("Drivetrain instance already created!");
+    }
+    return DRIVETRAIN;
+  }
+
+  public static Drivetrain getInstance() {
+    if (DRIVETRAIN == null) {
+      throw new IllegalStateException("Drivetrain instance not created");
+    }
     return DRIVETRAIN;
   }
 
   /** Creates a new SwerveDrivetrain. */
-  public Drivetrain() {
+  public Drivetrain(GyroIO gyroIO,
+      ModuleIO flModuleIO,
+      ModuleIO frModuleIO,
+      ModuleIO blModuleIO,
+      ModuleIO brModuleIO) {
     new Thread(() -> {
       try{
         Thread.sleep(1000);
@@ -89,37 +114,10 @@ public class Drivetrain extends SubsystemBase {
       catch(Exception e){}
     }).start();
 
-    leftFront = new SwerveModule(
-      SwerveConstants.LEFT_FRONT_DRIVE_ID, 
-      SwerveConstants.LEFT_FRONT_TURN_ID, 
-      false, 
-      true, 
-      SwerveConstants.LEFT_FRONT_CANCODER_ID, 
-      SwerveConstants.LEFT_FRONT_OFFSET);
-
-    rightFront = new SwerveModule(
-      SwerveConstants.RIGHT_FRONT_DRIVE_ID, 
-      SwerveConstants.RIGHT_FRONT_TURN_ID, 
-      false, 
-      false, 
-      SwerveConstants.RIGHT_FRONT_CANCODER_ID, 
-      SwerveConstants.RIGHT_FRONT_OFFSET);
-
-    leftBack = new SwerveModule(
-      SwerveConstants.LEFT_BACK_DRIVE_ID, 
-      SwerveConstants.LEFT_BACK_TURN_ID, 
-      false, 
-      true, 
-      SwerveConstants.LEFT_BACK_CANCODER_ID, 
-      SwerveConstants.LEFT_BACK_OFFSET);
-    
-    rightBack = new SwerveModule(
-      SwerveConstants.RIGHT_BACK_DRIVE_ID, 
-      SwerveConstants.RIGHT_BACK_TURN_ID, 
-      false, 
-      true, 
-      SwerveConstants.RIGHT_BACK_CANCODER_ID, 
-      SwerveConstants.RIGHT_BACK_OFFSET);
+    leftFront = new SwerveModule(flModuleIO);
+    rightFront = new SwerveModule(frModuleIO);
+    leftBack = new SwerveModule(blModuleIO);    
+    rightBack = new SwerveModule(brModuleIO);
 
     frontLimiter = new SlewRateLimiter(SwerveConstants.TELE_DRIVE_MAX_ACCELERATION);
     sideLimiter = new SlewRateLimiter(SwerveConstants.TELE_DRIVE_MAX_ACCELERATION);
@@ -128,8 +126,8 @@ public class Drivetrain extends SubsystemBase {
     alignPIDController = new PIDController(SwerveConstants.kP_PERCENT, 0, 0);
     noteAlignPIDController = new PIDController(SwerveConstants.kP_PERCENT, 0, 0);
 
-
-    gyro = new Pigeon2(SwerveConstants.PIGEON_ID);
+    // gyro = new Pigeon2(SwerveConstants.PIGEON_ID);
+    this.gyroIO = gyroIO;
     
     AutoBuilder.configureHolonomic(
       this::getPose,
@@ -147,16 +145,17 @@ public class Drivetrain extends SubsystemBase {
     leftBackStateEntry = swerveTab.add("Left Back Module State", leftBack.getState().toString()).withSize(4, 1).withPosition(0, 2).getEntry();
     rightBackStateEntry = swerveTab.add("Right Back Module State", rightBack.getState().toString()).withSize(4, 1).withPosition(0, 3).getEntry();
     robotAngleEntry = swerveTab.add("Robot Angle", getHeading()).withSize(1, 1).withPosition(4, 1).getEntry();
-    angularSpeedEntry = swerveTab.add("Angular Speed", new DecimalFormat("#.00").format((-gyro.getRate() / 180)) + "\u03C0" + " rad/s").withSize(1, 1).withPosition(5, 1).getEntry();
+    // angularSpeedEntry = swerveTab.add("Angular Speed", new DecimalFormat("#.00").format((-getAngularSpeed())) + "\u03C0" + " rad/s").withSize(1, 1).withPosition(5, 1).getEntry();
   }
 
   @Override
   public void periodic() {
+    gyroIO.updateInputs(gyroInputs);
     RobotContainer.poseEstimation.updateOdometry(getHeadingRotation2d(), getModulePositions());
 
     SmarterDashboard.putString("Drive Mode", getDriveMode().toString(), "Drivetrain");
     SmarterDashboard.putNumber("Robot Angle", getHeading(), "Drivetrain");
-    SmarterDashboard.putString("Angular Speed", new DecimalFormat("#.00").format((-gyro.getRate() / 180)) + "\u03C0" + " rad/s", "Drivetrain");
+    // SmarterDashboard.putString("Angular Speed", new DecimalFormat("#.00").format((-gyro.getRate() / 180)) + "\u03C0" + " rad/s", "Drivetrain");
     SmarterDashboard.putBoolean("Ready To Shoot", readyToShoot(), "Drivetrain");
     SmarterDashboard.putString("Tag 7 Pose", RobotContainer.aprilTagFieldLayout.getTagPose(7).get().toPose2d().toString(), "Drivetrain");
 
@@ -171,7 +170,7 @@ public class Drivetrain extends SubsystemBase {
     leftBackStateEntry.setString(leftBack.getState().toString());
     rightBackStateEntry.setString(rightBack.getState().toString());
     robotAngleEntry.setDouble(getHeading());
-    angularSpeedEntry.setString(new DecimalFormat("#.00").format((-gyro.getRate() / 180)) + "\u03C0" + "rad/s");
+    // angularSpeedEntry.setString(new DecimalFormat("#.00").format((-getAngularSpeed() / 180)) + "\u03C0" + "rad/s");
   }
 /*
  *<p> 
@@ -368,26 +367,27 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void zeroHeading(){
-    gyro.setYaw(0);
+    setHeading(0.0);
   }
 /* Sets the heading of the gyro to the specified double value */
   public void setHeading(double heading){
-    gyro.setYaw(heading);
+    gyroInputs.yawPosition = Rotation2d.fromDegrees(heading);
   }
 /* returns the heading */
   public double getHeading(){
-    if(RobotContainer.isSimulation){
-      return Math.IEEEremainder(-RobotContainer.gyroSimulation.getGyroReading().getDegrees(), 360);
-    }
-      return Math.IEEEremainder(-gyro.getAngle(), 360); //clamp heading between -180 and 180
-    }
+    // if(RobotContainer.isSimulation){
+    //   return Math.IEEEremainder(-RobotContainer.gyroSimulation.getGyroReading().getDegrees(), 360);
+    // }
+    //   return Math.IEEEremainder(-gyro.getAngle(), 360); //clamp heading between -180 and 180
+    return gyroInputs.yawPosition.getDegrees();
+  }
 
   public Rotation2d getHeadingRotation2d(){
     return Rotation2d.fromDegrees(getHeading());
   }
 
   public double getAngularSpeed() {
-    return gyro.getRate();
+    return gyroInputs.yawVelocityRadPerSec;
   }
 
   public void stopModules(){

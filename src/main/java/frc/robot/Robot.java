@@ -32,9 +32,9 @@ import frc.robot.subsystems.Transport.Transport;
  */
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
-  private Drivetrain drivetrain = Drivetrain.getInstance();
-  private Transport transport = Transport.getInstance();
-  private Shooter shooter = Shooter.getInstance();
+  private Drivetrain drivetrain;
+  private Transport transport;
+  private Shooter shooter;
   private static final NetworkTable llTable = NetworkTableInstance.getDefault().getTable(VisionConstants.SHOOTER_LL_NAME);
 
 
@@ -79,6 +79,11 @@ public class Robot extends LoggedRobot {
     } catch (IOException e) {
       e.printStackTrace();
     }
+
+    // gets these after robotContainer has been created
+    drivetrain = Drivetrain.getInstance();
+    shooter = Shooter.getInstance();
+    transport = Transport.getInstance();
   }
 
   /**

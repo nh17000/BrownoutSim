@@ -57,6 +57,10 @@ import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.LEDStrip;
 import frc.robot.subsystems.AmpBar.AmpBar;
 import frc.robot.subsystems.Drive.Drivetrain;
+import frc.robot.subsystems.Drive.Gyro.GyroIOPigeon2;
+import frc.robot.subsystems.Drive.Gyro.GyroIOSim;
+import frc.robot.subsystems.Drive.Module.ModuleReal;
+import frc.robot.subsystems.Drive.Module.ModuleSim;
 import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Intake.IntakeReal;
 import frc.robot.subsystems.Intake.IntakeSim;
@@ -75,7 +79,7 @@ import frc.robot.subsystems.Transport.Transport;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  public static final Drivetrain drivetrain = Drivetrain.getInstance();
+  public static Drivetrain drivetrain;
   public static Intake intake;
   public static final Transport transport = Transport.getInstance();
   // public static final Climber climber = Climber.getInstance();
@@ -112,55 +116,73 @@ public class RobotContainer {
   private final JoystickButton nextClimbSequenceStep_RB = new JoystickButton(opController, XboxController.Button.kRightBumper.value);
 
   //Pose Estimation
-  public static final PoseEstimation poseEstimation = new PoseEstimation();
+  public static PoseEstimation poseEstimation;
   public static AprilTagFieldLayout aprilTagFieldLayout;
 
   //Shuffleboard
   public static final ShuffleboardTab autoTab = Shuffleboard.getTab("Auto");
   private SendableChooser<Command> autoChooser;
 
-  public static GyroSimulation gyroSimulation;
-
   /** The container for the robot. Contains subsystems, OI devices, and commands. 
    * @throws IOException */
   public RobotContainer() throws IOException {
+    aprilTagFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
+
+    if (Robot.isReal()) {
+      this.swerveDriveSimulation = null;      
+      drivetrain = Drivetrain.createInstance(
+          new GyroIOPigeon2(true), 
+          new ModuleReal(0),
+          new ModuleReal(1),
+          new ModuleReal(2),
+          new ModuleReal(3));
+
+      intake = Intake.createInstance(new IntakeReal());
+
+      shooter = Shooter.createInstance(new ShooterReal());
+    } else {  
+      final GyroSimulation gyroSimulation = GyroSimulation.createPigeon2();
+
+      this.swerveDriveSimulation = new SwerveDriveSimulation(
+        59.9, // robot weight in kg
+        0.743, // track width in meters
+        0.686, // track length in meters 
+        0.794, // bumper width in meters
+        0.838, // bumper length in meters
+        SwerveModuleSimulation.getMark4( // creates a mark4 module
+            DCMotor.getKrakenX60(1), // drive motor is a Kraken x60
+            DCMotor.getKrakenX60(1), // steer motor is a Falcon 500
+            80, // current limit is 80 Amps
+            DRIVE_WHEEL_TYPE.RUBBER, // rubber wheels
+            3 // l3 gear ratio
+        ),
+        gyroSimulation, // the gyro simulation
+        new Pose2d(3, 3, new Rotation2d())); // initial starting pose on the field
+
+        // register the drivetrain simulation
+        SimulatedArena.getInstance().addDriveTrainSimulation(swerveDriveSimulation);  
+    
+         // reset the field for auto (placing game-pieces in positions)
+         SimulatedArena.getInstance().resetFieldForAuto();
+  
+        drivetrain = Drivetrain.createInstance(
+          new GyroIOSim(gyroSimulation), 
+          new ModuleSim(swerveDriveSimulation.getModules()[0], 0),
+          new ModuleSim(swerveDriveSimulation.getModules()[1], 1),
+          new ModuleSim(swerveDriveSimulation.getModules()[2], 2),
+          new ModuleSim(swerveDriveSimulation.getModules()[3], 3));
+  
+        intake = Intake.createInstance(new IntakeSim(swerveDriveSimulation));
+  
+        shooter = Shooter.createInstance(new ShooterSim(swerveDriveSimulation));
+    }
+
     registerNamedCommands();
     configureBindings();
     setDefaultCommands();
     configureAutoTab();
 
-    aprilTagFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
-
-    gyroSimulation = GyroSimulation.createPigeon2();
-
-    this.swerveDriveSimulation = new SwerveDriveSimulation(
-      59.9, // robot weight in kg
-      0.743, // track width in meters
-      0.686, // track length in meters 
-      0.794, // bumper width in meters
-      0.838, // bumper length in meters
-      SwerveModuleSimulation.getMark4( // creates a mark4 module
-          DCMotor.getKrakenX60(1), // drive motor is a Kraken x60
-          DCMotor.getKrakenX60(1), // steer motor is a Falcon 500
-          80, // current limit is 80 Amps
-          DRIVE_WHEEL_TYPE.RUBBER, // rubber wheels
-          3 // l3 gear ratio
-      ),
-      gyroSimulation, // the gyro simulation
-      new Pose2d(3, 3, new Rotation2d())); // initial starting pose on the field
-
-      intake = Intake.createInstance(
-        Robot.isReal() ? new IntakeReal() : new IntakeSim(swerveDriveSimulation));
-
-      shooter = Shooter.createInstance(
-        Robot.isReal() ? new ShooterReal() : new ShooterSim(swerveDriveSimulation));
-
-      // register the drivetrain simulation
-      SimulatedArena.getInstance().addDriveTrainSimulation(swerveDriveSimulation);  
-
-       // reset the field for auto (placing game-pieces in positions)
-       SimulatedArena.getInstance().resetFieldForAuto();
-
+    poseEstimation = new PoseEstimation();
 
     // HttpCamera httpCamera = new HttpCamera("Limelight", "http://10.54.14.11:5800");
     // CameraServer.addCamera(httpCamera);

@@ -324,7 +324,8 @@ public class Shooter extends SubsystemBase {
   // }
 
   public boolean hasPriorityTarget(){
-    return io.hasPriorityTarget(isRedAlliance());
+    if (this.io != null) { return io.hasPriorityTarget(isRedAlliance()); }
+    return false;
   }
 
   public void setPipeline(int index){
