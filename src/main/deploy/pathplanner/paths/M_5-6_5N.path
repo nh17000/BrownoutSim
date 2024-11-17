@@ -1,5 +1,5 @@
 {
-  "version": 1.0,
+  "version": "2025.0",
   "waypoints": [
     {
       "anchor": {
@@ -52,12 +52,12 @@
         "y": 4.972376690596612
       },
       "prevControl": {
-        "x": 7.805783938102913,
-        "y": 5.0857422610539995
+        "x": 7.74299117890988,
+        "y": 5.181315833253878
       },
       "nextControl": {
-        "x": 7.954748485574763,
-        "y": 4.859011120139224
+        "x": 8.017541244767795,
+        "y": 4.763437547939345
       },
       "isLocked": false,
       "linkedName": null
@@ -78,23 +78,25 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
+  "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 6.0,
     "maxAcceleration": 7.0,
     "maxAngularVelocity": 360.0,
-    "maxAngularAcceleration": 360.0
+    "maxAngularAcceleration": 360.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -45.0,
-    "rotateFast": true
+    "rotation": -45.0
   },
   "reversed": false,
   "folder": "Middle 5 Note",
-  "previewStartingState": {
-    "rotation": 9.5,
-    "velocity": 0
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
   },
   "useDefaultConstraints": false
 }

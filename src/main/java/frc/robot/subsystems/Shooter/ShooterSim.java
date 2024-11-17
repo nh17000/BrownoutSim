@@ -20,14 +20,14 @@ import frc.robot.Constants.ShooterConstants;
 
 public class ShooterSim implements ShooterIO {
   private final SingleJointedArmSim pivotSim = new SingleJointedArmSim(
-      DCMotor.getKrakenX60(1), // i think it's a neo
+      DCMotor.getNEO(1), // i think it's a neo
       50, // ?
-      0.5, // ??
-      0.5, // check onshape
+      SingleJointedArmSim.estimateMOI(Units.inchesToMeters(16), 9), // ??
+      Units.inchesToMeters(16), // estimate
       Units.degreesToRadians(-85), 
       Units.degreesToRadians(0), 
-      true, 
-      0);
+      false, 
+      -85);
   // private final FlywheelSim flywheelSim;
 
   private final PIDController pivotController;

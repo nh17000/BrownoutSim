@@ -15,11 +15,11 @@ public class AmpBarSim implements AmpBarIO {
   private final SingleJointedArmSim armSim = new SingleJointedArmSim(
     DCMotor.getNEO(1), // i think it's a neo
     50, // ?
-    0.5, // ??
-    0.5, // check onshape
+    SingleJointedArmSim.estimateMOI(Units.inchesToMeters(24.33), 2.07),
+    Units.inchesToMeters(24.33), // check onshape
     Units.degreesToRadians(135), 
     Units.degreesToRadians(-60), 
-    true, 
+    false, 
     0);
 
   private final PIDController controller;
@@ -36,17 +36,17 @@ public class AmpBarSim implements AmpBarIO {
     armSim.update(0.02);
     inputs.ampBarCurrent = armSim.getCurrentDrawAmps();
     // TODO: convert encoder values (roughly -20 to -1) to the actual angle of the arm (-135 to 60)
-    inputs.ampBarPos = -armSim.getAngleRads(); 
+    inputs.ampBarPos = armSim.getAngleRads(); 
 
-    final Pose3d ampBarPoseToRobot =
-                new Pose3d(AMP_BAR_TRANSLATION_ON_ROBOT, new Rotation3d(0, -armSim.getAngleRads(), 0));
+    Pose3d ampBarPoseToRobot =
+                new Pose3d(AMP_BAR_TRANSLATION_ON_ROBOT, new Rotation3d(0, armSim.getAngleRads(), 0));
     Logger.recordOutput("MechanismPoses/Amp Bar", new Pose3d[] {ampBarPoseToRobot});
   }
   
   @Override
   public void setReference(double reference) {
     armSim.setInputVoltage(MathUtil.clamp(
-      controller.calculate(-armSim.getAngleRads(), reference), -12, 12));
-    // controller.reset(); // ?
+      controller.calculate(armSim.getAngleRads(), reference), -12, 12));
+    controller.reset(); // ?
   }
 }

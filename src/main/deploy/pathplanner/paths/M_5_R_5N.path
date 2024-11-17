@@ -1,5 +1,5 @@
 {
-  "version": 1.0,
+  "version": "2025.0",
   "waypoints": [
     {
       "anchor": {
@@ -36,8 +36,8 @@
         "y": 6.317843324522754
       },
       "prevControl": {
-        "x": 6.699885085290512,
-        "y": 6.2835832308552515
+        "x": 6.83130526753515,
+        "y": 6.241341029419476
       },
       "nextControl": {
         "x": 6.3203048971418605,
@@ -62,23 +62,25 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
+  "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 6.0,
     "maxAcceleration": 7.0,
     "maxAngularVelocity": 360.0,
-    "maxAngularAcceleration": 360.0
+    "maxAngularAcceleration": 360.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 16.0,
-    "rotateFast": true
+    "rotation": 16.0
   },
   "reversed": false,
   "folder": "Middle 5 Note",
-  "previewStartingState": {
-    "rotation": -15.0,
-    "velocity": 0
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
   },
   "useDefaultConstraints": false
 }

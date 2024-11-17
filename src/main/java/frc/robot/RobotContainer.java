@@ -44,6 +44,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.drivers.vision.PoseEstimation;
 import frc.robot.Constants.IOConstants;
+import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.AmpBarHold;
 import frc.robot.commands.AutoAlign;
 import frc.robot.commands.ClimberHold;
@@ -145,11 +146,11 @@ public class RobotContainer {
 
       this.swerveDriveSimulation = new SwerveDriveSimulation(
         59.9, // robot weight in kg
-        0.743, // track width in meters
-        0.686, // track length in meters 
-        0.794, // bumper width in meters
-        0.838, // bumper length in meters
-        SwerveModuleSimulation.getMark4( // creates a mark4 module
+        SwerveConstants.TRACK_WIDTH, // track width in meters
+        SwerveConstants.TRACK_WIDTH, // track length in meters 
+        Units.inchesToMeters(27 + 3.5 * 2), // bumper width in meters
+        Units.inchesToMeters(29 + 3.25 * 2), // bumper length in meters
+        SwerveModuleSimulation.getMark4i( // creates a mark4 module
             DCMotor.getKrakenX60(1), // drive motor is a Kraken x60
             DCMotor.getKrakenX60(1), // steer motor is a Falcon 500
             80, // current limit is 80 Amps
@@ -157,7 +158,7 @@ public class RobotContainer {
             3 // l3 gear ratio
         ),
         gyroSimulation, // the gyro simulation
-        new Pose2d(3, 3, new Rotation2d())); // initial starting pose on the field
+        new Pose2d(1.45, 7.33, new Rotation2d(0))); // initial starting pose on the field
 
         // register the drivetrain simulation
         SimulatedArena.getInstance().addDriveTrainSimulation(swerveDriveSimulation);  
