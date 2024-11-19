@@ -167,7 +167,8 @@ public class Drivetrain extends SubsystemBase {
     states[1] = rightFront.getState();
     states[2] = leftBack.getState();
     states[3] = rightBack.getState(); 
-    Logger.recordOutput("a", states);
+    Logger.recordOutput("Drivetrain/Actual Module States", states);
+    Logger.recordOutput("Drivetrain/Actual Chassis Speeds", getFieldRelativeSpeeds());
 
     SmarterDashboard.putData("Left Front Module State", states[0], "Drivetrain");
     SmarterDashboard.putData("Right Front Module State", states[1], "Drivetrain");
@@ -217,6 +218,7 @@ public class Drivetrain extends SubsystemBase {
     }
 
     SwerveModuleState[] moduleStates = SwerveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds, centerOfRotation);
+    Logger.recordOutput("Drivetrain/Intended Chassis Speeds", chassisSpeeds);
 
     setModuleStates(moduleStates);
   }
@@ -413,6 +415,7 @@ public class Drivetrain extends SubsystemBase {
     rightFront.setDesiredState(moduleStates[1]);
     leftBack.setDesiredState(moduleStates[2]);
     rightBack.setDesiredState(moduleStates[3]);
+    Logger.recordOutput("Drivetrain/Intended Module States", moduleStates);
   }
 
   public SwerveModuleState[] getModuleStates(){

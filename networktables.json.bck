@@ -2,7 +2,7 @@
   {
     "name": "/Preferences/Spark 22 Flashes",
     "type": "double",
-    "value": 53.0,
+    "value": 76.0,
     "properties": {
       "persistent": true
     }
@@ -34,7 +34,7 @@
   {
     "name": "/Preferences/Spark 23 Flashes",
     "type": "double",
-    "value": 47.0,
+    "value": 70.0,
     "properties": {
       "persistent": true
     }
@@ -42,7 +42,7 @@
   {
     "name": "/Preferences/Spark 24 Flashes",
     "type": "double",
-    "value": 47.0,
+    "value": 70.0,
     "properties": {
       "persistent": true
     }

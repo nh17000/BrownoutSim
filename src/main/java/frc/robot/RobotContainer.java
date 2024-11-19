@@ -148,7 +148,7 @@ public class RobotContainer {
         59.9, // robot weight in kg
         SwerveConstants.TRACK_WIDTH, // track width in meters
         SwerveConstants.TRACK_WIDTH, // track length in meters 
-        Units.inchesToMeters(27 + 3.5 * 2), // bumper width in meters
+        Units.inchesToMeters(27 + 3.25 * 2), // bumper width in meters
         Units.inchesToMeters(29 + 3.25 * 2), // bumper length in meters
         SwerveModuleSimulation.getMark4i( // creates a mark4 module
             DCMotor.getKrakenX60(1), // drive motor is a Kraken x60
