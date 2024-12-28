@@ -15,6 +15,7 @@ public interface ModuleIO {
 
     public double absoluteWheelAngleDeg = 0.0;
     public double turnAngle = 0.0;
+    public double offset = 0.0;
   }
 
   public default void updateInputs(ModuleIOInputs inputs) {}

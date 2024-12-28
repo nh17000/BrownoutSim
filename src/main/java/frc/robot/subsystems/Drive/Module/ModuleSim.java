@@ -30,11 +30,12 @@ public class ModuleSim implements ModuleIO {
     inputs.turnVelocity = moduleSim.getSteerRelativeEncoderSpeedRadPerSec();
 
     inputs.absoluteWheelAngleDeg = moduleSim.getSteerAbsoluteFacing().getDegrees();
-    if (turnRelativeOffset == Double.MIN_VALUE && inputs.absoluteWheelAngleDeg != 0.0) {
+    if (turnRelativeOffset == Double.MIN_VALUE && Math.abs(inputs.absoluteWheelAngleDeg) >= 1) {
       turnRelativeOffset = inputs.absoluteWheelAngleDeg + inputs.turnPosition;
     }
-    inputs.turnAngle = inputs.absoluteWheelAngleDeg - turnRelativeOffset;
 
+    inputs.offset = turnRelativeOffset;
+    inputs.turnAngle = inputs.absoluteWheelAngleDeg - turnRelativeOffset;
   }
 
   @Override
@@ -45,7 +46,8 @@ public class ModuleSim implements ModuleIO {
   @Override
   public void setSpeed(double speed) {
     // TODO: battery sim
-    moduleSim.requestDriveVoltageOut(speed * 12);
+    // if (index == 3) speed *= -1;
+    moduleSim.requestDriveVoltageOut(speed * 5);
   }
 
   @Override

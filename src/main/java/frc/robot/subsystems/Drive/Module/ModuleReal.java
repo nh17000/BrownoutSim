@@ -112,6 +112,7 @@ public class ModuleReal implements ModuleIO {
 
     inputs.absoluteWheelAngleDeg = absoluteEncoder.getAbsolutePosition().getValueAsDouble();
     inputs.turnAngle = getTurnAngle();
+    inputs.offset = absoluteEncoderOffset;
   }
 
   @Override

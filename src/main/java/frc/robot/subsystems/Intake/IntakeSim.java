@@ -6,6 +6,8 @@ import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
 import org.ironmaple.simulation.seasonspecific.crescendo2024.CrescendoNoteOnField;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
 
 public class IntakeSim implements IntakeIO {
   private final IntakeSimulation intakeSim; 
@@ -22,7 +24,7 @@ public class IntakeSim implements IntakeIO {
     intakeSim = new IntakeSimulation(
       "Note",
       driveSim,
-      0.6, // check onshape for width of beta's intake
+      Units.inchesToMeters(27),
       IntakeSimulation.IntakeSide.BACK, 
       1
     );
@@ -35,16 +37,27 @@ public class IntakeSim implements IntakeIO {
   public void updateInputs(IntakeIOInputs inputs) {
     // gamePiecesInIntakeCount shows the amount of game pieces in the intake, we store this in the
     // inputs
-    boolean noteDetected = intakeSim.getGamePiecesAmount() != 0;
+    boolean intakeHasNote = intakeSim.getGamePiecesAmount() != 0;
 
     // if the intake voltage is higher than 2 volts, it is considered running
     if (intakeVoltage > 4) intakeSim.startIntake();
     // otherwise, it's stopped
     else intakeSim.stopIntake();
 
+    if (intakeHasNote) {
+      SimulatedArena.getInstance()
+          .addGamePiece(
+              new CrescendoNoteOnField(
+                  driveSim
+                      .getSimulatedDriveTrainPose()
+                      .getTranslation()
+                      .plus(
+                          new Translation2d(0, 0.5))));
+    }
+
     // if the there is note, we do an integral to the voltage to approximate the position of the
     // note in the intake
-    if (noteDetected) intakeVoltageIntegralSinceNoteTaken += 0.02 * intakeVoltage;
+    if (intakeHasNote) intakeVoltageIntegralSinceNoteTaken += 0.02 * intakeVoltage;
     // if the note is gone, we clear the integral
     else intakeVoltageIntegralSinceNoteTaken = 0.0;
 
