@@ -1,10 +1,10 @@
 package frc.robot.subsystems.AmpBar;
 
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import frc.lib.drivers.PearadoxSparkMax;
 import frc.robot.Constants.AmpBarConstants;
@@ -12,7 +12,7 @@ import frc.robot.Constants.AmpBarConstants;
 public class AmpBarReal implements AmpBarIO {
   private PearadoxSparkMax ampBar;
   private RelativeEncoder ampBarEncoder;
-  private SparkPIDController ampBarController;
+  private SparkClosedLoopController ampBarController;
 
   public AmpBarReal() {
     ampBar = new PearadoxSparkMax(AmpBarConstants.AMP_BAR_ID, MotorType.kBrushless, IdleMode.kBrake, 40, false, 
@@ -20,7 +20,7 @@ public class AmpBarReal implements AmpBarIO {
       AmpBarConstants.AMP_BAR_MIN_OUTPUT, AmpBarConstants.AMP_BAR_MAX_OUTPUT);
 
     ampBarEncoder = ampBar.getEncoder();
-    ampBarController = ampBar.getPIDController();
+    ampBarController = ampBar.getClosedLoopController();
   }
 
   @Override

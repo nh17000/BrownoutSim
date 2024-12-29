@@ -9,7 +9,7 @@ public class OdometryTimeStampsSim {
     final double[] odometryTimestamps = new double[5];
     for (int i = 0; i < SimulatedArena.getSimulationSubTicksIn1Period(); i++)
       odometryTimestamps[i] =
-          Timer.getFPGATimestamp() - Robot.defaultPeriodSecs + SimulatedArena.getSimulationDt() * i;
+          Timer.getFPGATimestamp() - Robot.defaultPeriodSecs + SimulatedArena.getSimulationDt().magnitude() * i;
     return odometryTimestamps;
   }
 }

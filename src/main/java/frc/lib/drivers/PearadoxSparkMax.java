@@ -4,12 +4,15 @@
 
 package frc.lib.drivers;
 
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 
 import edu.wpi.first.wpilibj.Preferences;
 
 /** Add your docs here. */
-public class PearadoxSparkMax extends CANSparkMax {
+public class PearadoxSparkMax extends SparkMax {
     /**
      * Creates a new CANSparkMax with the necessary configurations.
      * @param deviceId The device ID.
@@ -20,11 +23,18 @@ public class PearadoxSparkMax extends CANSparkMax {
      */
     public PearadoxSparkMax(int deviceId, MotorType m, IdleMode mode, int limit, boolean isInverted){
         super(deviceId, m);
-        this.restoreFactoryDefaults();
-        this.setSmartCurrentLimit(limit);
-        this.setInverted(isInverted);
-        this.setIdleMode(mode);
-        this.burnFlash();
+        SparkMaxConfig config = new SparkMaxConfig();
+
+        config
+            .idleMode(mode)
+            .smartCurrentLimit(limit)
+            .inverted(isInverted);
+        // config.encoder
+        //     .positionConversionFactor(1000)
+        //     .velocityConversionFactor(1000);
+
+        super.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
         String key = "Spark " + this.getDeviceId() + " Flashes";
         Preferences.setDouble(key, Preferences.getDouble(key, 0) + 1);
     }
@@ -45,15 +55,22 @@ public class PearadoxSparkMax extends CANSparkMax {
     public PearadoxSparkMax(int deviceId, MotorType m, IdleMode mode, int limit, boolean isInverted, 
         double kP, double kI, double kD, double minOutput, double maxOutput){
         super(deviceId, m);
-        this.restoreFactoryDefaults();
-        this.setSmartCurrentLimit(limit);
-        this.setInverted(isInverted);
-        this.setIdleMode(mode);
-        this.getPIDController().setP(kP, 0);
-        this.getPIDController().setI(kI, 0);
-        this.getPIDController().setD(kD, 0);
-        this.getPIDController().setOutputRange(minOutput, maxOutput, 0);
-        this.burnFlash();
+        SparkMaxConfig config = new SparkMaxConfig();
+
+        config
+            .idleMode(mode)
+            .smartCurrentLimit(limit)
+            .inverted(isInverted);
+        config.closedLoop
+            .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+            .pid(kP, kI, kD)
+            .outputRange(minOutput, maxOutput);
+        // config.encoder
+        //     .positionConversionFactor(1000)
+        //     .velocityConversionFactor(1000);
+
+        super.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
         String key = "Spark " + this.getDeviceId() + " Flashes";
         Preferences.setDouble(key, Preferences.getDouble(key, 0) + 1);
     }

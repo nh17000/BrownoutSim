@@ -8,11 +8,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
-import org.ironmaple.simulation.drivesims.GyroSimulation;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
-import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
-import org.ironmaple.simulation.drivesims.SwerveModuleSimulation.DRIVE_WHEEL_TYPE;
 import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -22,16 +18,12 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.hal.simulation.SimulatorJNI;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -47,15 +39,14 @@ import frc.robot.Constants.IOConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.AmpBarHold;
 import frc.robot.commands.AutoAlign;
-import frc.robot.commands.ClimberHold;
 import frc.robot.commands.IntakeHold;
 import frc.robot.commands.Outtake;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.ShooterHold;
 import frc.robot.commands.SourceAutoAlign;
 import frc.robot.commands.SwerveDrive;
-import frc.robot.subsystems.Climber;
-import frc.robot.subsystems.LEDStrip;
+// import frc.robot.subsystems.Climber;
+// import frc.robot.subsystems.LEDStrip;
 import frc.robot.subsystems.AmpBar.AmpBar;
 import frc.robot.subsystems.Drive.Drivetrain;
 import frc.robot.subsystems.Drive.Gyro.GyroIOPigeon2;
@@ -86,12 +77,10 @@ public class RobotContainer {
   // public static final Climber climber = Climber.getInstance();
   public static final AmpBar ampBar = AmpBar.getInstance();
   public static Shooter shooter;
-  public static final LEDStrip ledStrip = new LEDStrip(90, 0);
+  // public static final LEDStrip ledStrip = new LEDStrip(90, 0);
 
   private final SwerveDriveSimulation swerveDriveSimulation;
   public static boolean isSimulation = false;
-
-
 
   //Driver Controls
   public static final CommandXboxController commandDriverController = new CommandXboxController(IOConstants.DRIVER_CONTROLLER_PORT);
@@ -132,7 +121,7 @@ public class RobotContainer {
     if (Robot.isReal()) {
       this.swerveDriveSimulation = null;      
       drivetrain = Drivetrain.createInstance(
-          new GyroIOPigeon2(true), 
+          new GyroIOPigeon2(), 
           new ModuleReal(0),
           new ModuleReal(1),
           new ModuleReal(2),
@@ -142,40 +131,26 @@ public class RobotContainer {
 
       shooter = Shooter.createInstance(new ShooterReal());
     } else {  
-      final GyroSimulation gyroSimulation = GyroSimulation.createPigeon2();
-
       this.swerveDriveSimulation = new SwerveDriveSimulation(
-        59.9, // robot weight in kg
-        SwerveConstants.TRACK_WIDTH, // track width in meters
-        SwerveConstants.TRACK_WIDTH, // track length in meters 
-        Units.inchesToMeters(27 + 3.25 * 2), // bumper width in meters
-        Units.inchesToMeters(29 + 3.25 * 2), // bumper length in meters
-        SwerveModuleSimulation.getMark4i( // creates a mark4 module
-            DCMotor.getKrakenX60(1), // drive motor is a Kraken x60
-            DCMotor.getKrakenX60(1), // steer motor is a Falcon 500
-            80, // current limit is 80 Amps
-            DRIVE_WHEEL_TYPE.RUBBER, // rubber wheels
-            3 // l3 gear ratio
-        ),
-        gyroSimulation, // the gyro simulation
+        SwerveConstants.mapleSimConfig,
         new Pose2d(1.45, 7.33, new Rotation2d(0))); // initial starting pose on the field
 
-        // register the drivetrain simulation
-        SimulatedArena.getInstance().addDriveTrainSimulation(swerveDriveSimulation);  
-    
-         // reset the field for auto (placing game-pieces in positions)
-         SimulatedArena.getInstance().resetFieldForAuto();
+      // register the drivetrain simulation
+      SimulatedArena.getInstance().addDriveTrainSimulation(swerveDriveSimulation);  
   
-        drivetrain = Drivetrain.createInstance(
-          new GyroIOSim(gyroSimulation), 
-          new ModuleSim(swerveDriveSimulation.getModules()[0], 0),
-          new ModuleSim(swerveDriveSimulation.getModules()[1], 1),
-          new ModuleSim(swerveDriveSimulation.getModules()[2], 2),
-          new ModuleSim(swerveDriveSimulation.getModules()[3], 3));
-  
-        intake = Intake.createInstance(new IntakeSim(swerveDriveSimulation));
-  
-        shooter = Shooter.createInstance(new ShooterSim(swerveDriveSimulation));
+      // reset the field for auto (placing game-pieces in positions)
+      SimulatedArena.getInstance().resetFieldForAuto();
+
+      drivetrain = Drivetrain.createInstance(
+        new GyroIOSim(swerveDriveSimulation.getGyroSimulation()), 
+        new ModuleSim(swerveDriveSimulation.getModules()[0], 0),
+        new ModuleSim(swerveDriveSimulation.getModules()[1], 1),
+        new ModuleSim(swerveDriveSimulation.getModules()[2], 2),
+        new ModuleSim(swerveDriveSimulation.getModules()[3], 3));
+
+      intake = Intake.createInstance(new IntakeSim(swerveDriveSimulation));
+
+      shooter = Shooter.createInstance(new ShooterSim(swerveDriveSimulation));
     }
 
     registerNamedCommands();
@@ -237,14 +212,19 @@ public class RobotContainer {
     //     0));
 
     // pathfind then follow path
-    ampAlign_Y.whileTrue(AutoBuilder.pathfindThenFollowPath(
-        PathPlannerPath.fromPathFile("Amp Align"), 
-        new PathConstraints(
-            3, // do we want it trying to align at 3m/s
-            3, 
-            Units.degreesToRadians(540), 
-            Units.degreesToRadians(720)),
-        3.0));
+    try {
+      ampAlign_Y.whileTrue(AutoBuilder.pathfindThenFollowPath(
+          PathPlannerPath.fromPathFile("Amp Align"), 
+          new PathConstraints(
+              3, // do we want it trying to align at 3m/s
+              3, 
+              Units.degreesToRadians(540), 
+              Units.degreesToRadians(720))
+          // 3.0
+          ));
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
   /**
