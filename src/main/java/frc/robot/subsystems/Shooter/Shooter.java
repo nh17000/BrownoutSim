@@ -194,7 +194,7 @@ public class Shooter extends SubsystemBase {
 
     //   rightShooter.setControl(voltage_request.withOutput(0));
     // }
-    if ((!transport.hasNote() && (((System.currentTimeMillis()) - transport.getRequestedShootTime()) > 100)) && !RobotContainer.opController.getRightBumper()) {
+    if ((!transport.hasNote() && (((System.currentTimeMillis()) - transport.getRequestedShootTime()) > 100)) && !RobotContainer.opController.getRightBumperButton()) {
       io.setShooterVolts(0.0, 0.0);
     }
     else if(RobotContainer.driverController.getLeftTriggerAxis() >= 0.95){ //Amp

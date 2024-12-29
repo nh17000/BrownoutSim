@@ -142,7 +142,7 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public void setDesiredState(SwerveModuleState desiredState){
-    desiredState = SwerveModuleState.optimize(desiredState, getState().angle); 
+    desiredState.optimize(getState().angle); 
     
     setAngle(desiredState);
     setSpeed(desiredState);

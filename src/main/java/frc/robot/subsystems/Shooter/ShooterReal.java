@@ -2,11 +2,12 @@ package frc.robot.subsystems.Shooter;
 
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
+
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
@@ -27,7 +28,7 @@ public class ShooterReal implements ShooterIO {
 
   private RelativeEncoder pivotEncoder;
 
-  private SparkPIDController pivotController;
+  private SparkClosedLoopController pivotController;
 
   private VoltageOut voltage_request = new VoltageOut(0);
 
@@ -45,7 +46,7 @@ public class ShooterReal implements ShooterIO {
 
     pivotEncoder = pivot.getEncoder();
 
-    pivotController = pivot.getPIDController();
+    pivotController = pivot.getClosedLoopController();
   }
 
   @Override

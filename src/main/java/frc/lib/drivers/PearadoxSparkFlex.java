@@ -4,12 +4,15 @@
 
 package frc.lib.drivers;
 
-import com.revrobotics.CANSparkFlex;
+import com.revrobotics.spark.config.SparkFlexConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.wpilibj.Preferences;
 
 /** Add your docs here. */
-public class PearadoxSparkFlex extends CANSparkFlex {
+public class PearadoxSparkFlex extends com.revrobotics.spark.SparkFlex {
+    private SparkFlexConfig config;
+
     /**
      * Creates a new CANSparkMax with the necessary configurations.
      * @param deviceId The device ID.
@@ -20,11 +23,15 @@ public class PearadoxSparkFlex extends CANSparkFlex {
      */
     public PearadoxSparkFlex(int deviceId, MotorType m, IdleMode mode, int limit, boolean isInverted){
         super(deviceId, m);
-        this.restoreFactoryDefaults();
-        this.setSmartCurrentLimit(limit);
-        this.setInverted(isInverted);
-        this.setIdleMode(mode);
-        this.burnFlash();
+        config = new SparkFlexConfig();
+        
+        config
+            .idleMode(mode)
+            .smartCurrentLimit(limit)
+            .inverted(isInverted);
+
+        super.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
         String key = "Spark " + this.getDeviceId() + " Flashes";
         Preferences.setDouble(key, Preferences.getDouble(key, 0) + 1);
     }
@@ -45,17 +52,27 @@ public class PearadoxSparkFlex extends CANSparkFlex {
     public PearadoxSparkFlex(int deviceId, MotorType m, IdleMode mode, int limit, boolean isInverted, 
         double kP, double kI, double kD, double minOutput, double maxOutput){
         super(deviceId, m);
-        this.restoreFactoryDefaults();
-        this.setSmartCurrentLimit(limit);
-        this.setInverted(isInverted);
-        this.setIdleMode(mode);
-        this.getPIDController().setP(kP, 0);
-        this.getPIDController().setI(kI, 0);
-        this.getPIDController().setIZone(2, 0);
-        this.getPIDController().setD(kD, 0);
-        this.getPIDController().setOutputRange(minOutput, maxOutput, 0);
-        this.burnFlash();
+        config = new SparkFlexConfig();
+
+        config
+            .idleMode(mode)
+            .smartCurrentLimit(limit)
+            .inverted(isInverted);
+        config.closedLoop
+            .pid(kP, kI, kD)
+            .outputRange(minOutput, maxOutput)
+            .iZone(2); // default from 2024 pearadox lib
+
+        super.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        
         String key = "Spark " + this.getDeviceId() + " Flashes";
         Preferences.setDouble(key, Preferences.getDouble(key, 0) + 1);
+    }
+
+    public void setIdleMode(IdleMode mode) {
+        if (super.configAccessor.getIdleMode() != mode) {
+            config.idleMode(mode);
+            super.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        }
     }
 }

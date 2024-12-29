@@ -1,13 +1,13 @@
 package frc.robot.subsystems.Intake;
 
+import static edu.wpi.first.units.Units.*;
+
 import org.ironmaple.simulation.IntakeSimulation;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
 import org.ironmaple.simulation.seasonspecific.crescendo2024.CrescendoNoteOnField;
 
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.util.Units;
 
 public class IntakeSim implements IntakeIO {
   private final IntakeSimulation intakeSim; 
@@ -21,13 +21,13 @@ public class IntakeSim implements IntakeIO {
   private double intakeVoltageIntegralSinceNoteTaken = 0.0;
 
   public IntakeSim(AbstractDriveTrainSimulation driveSim) {
-    intakeSim = new IntakeSimulation(
-      "Note",
-      driveSim,
-      Units.inchesToMeters(27),
+    intakeSim = IntakeSimulation.InTheFrameIntake(
+      "Note", 
+      driveSim, 
+      Inches.of(27), 
       IntakeSimulation.IntakeSide.BACK, 
-      1
-    );
+      1);
+
     intakeSim.register();
     
     this.driveSim = driveSim;
@@ -79,6 +79,11 @@ public class IntakeSim implements IntakeIO {
     //     && intakeSim.obtainGamePieceFromIntake())
     //   // launch the note by calling the shoot note call back
     //   passNoteToFlyWheelsCall.run();
+  }
+
+  @Override
+  public void set(double speed) {
+    intakeVoltage = speed * 12;
   }
 
   @Override

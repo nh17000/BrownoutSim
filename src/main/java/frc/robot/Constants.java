@@ -4,15 +4,17 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
+import static edu.wpi.first.units.Units.*;
+
+import org.ironmaple.simulation.drivesims.COTS;
+import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -72,11 +74,11 @@ public final class Constants {
     public static final double DRIVE_BASE_RADIUS = Math.sqrt(Math.pow(TRACK_WIDTH, 2) + Math.pow(WHEEL_BASE, 2)) / 2.0;
 
     public static final SwerveDriveKinematics DRIVE_KINEMATICS = new SwerveDriveKinematics(
-        new Translation2d(WHEEL_BASE / 2, TRACK_WIDTH / 2),
-        new Translation2d(WHEEL_BASE / 2, -TRACK_WIDTH / 2),
-        new Translation2d(-WHEEL_BASE / 2, TRACK_WIDTH / 2),
-        new Translation2d(-WHEEL_BASE / 2, -TRACK_WIDTH / 2)
-    ); //TODO: Determine the values
+      new Translation2d(WHEEL_BASE / 2, TRACK_WIDTH / 2),
+      new Translation2d(WHEEL_BASE / 2, -TRACK_WIDTH / 2),
+      new Translation2d(-WHEEL_BASE / 2, TRACK_WIDTH / 2),
+      new Translation2d(-WHEEL_BASE / 2, -TRACK_WIDTH / 2)
+    );
 
     //Teleop constraints
     public static final double TELE_DRIVE_MAX_SPEED = DRIVETRAIN_MAX_SPEED;
@@ -88,12 +90,12 @@ public final class Constants {
     public static final double AUTO_kP_TRANSLATION = 4;
     public static final double AUTO_kP_ROTATION = 1.5;
 
-    public static final HolonomicPathFollowerConfig AUTO_CONFIG = new HolonomicPathFollowerConfig(
-      new PIDConstants(AUTO_kP_TRANSLATION, 0.0, 0.0),
-      new PIDConstants(AUTO_kP_ROTATION, 0.0, 0.0),
-      DRIVETRAIN_MAX_SPEED, // Max module speed, in m/s
-      DRIVE_BASE_RADIUS,
-      new ReplanningConfig());
+    // public static final HolonomicPathFollowerConfig AUTO_CONFIG = new HolonomicPathFollowerConfig(
+    //   new PIDConstants(AUTO_kP_TRANSLATION, 0.0, 0.0),
+    //   new PIDConstants(AUTO_kP_ROTATION, 0.0, 0.0),
+    //   DRIVETRAIN_MAX_SPEED, // Max module speed, in m/s
+    //   DRIVE_BASE_RADIUS,
+    //   new ReplanningConfig());
 
     public static final double AUTO_DRIVE_MAX_SPEED = DRIVETRAIN_MAX_SPEED / 1.5;
     public static final double AUTO_DRIVE_MAX_ANGULAR_SPEED = DRIVETRAIN_MAX_ANGULAR_SPEED / 2.0;
@@ -105,6 +107,36 @@ public final class Constants {
 
     public static final double kS_PERCENT = 0.035;
     public static final double kP_PERCENT = 0.006;
+
+    public static final double ROBOT_MASS = 59.9;
+
+    // public static final DriveTrainSimulationConfig mapleSimConfig = DriveTrainSimulationConfig.Default()
+    //   .withRobotMass(Kilograms.of(ROBOT_MASS))
+    //   .withCustomModuleTranslations(MODULE_TRANSLATIONS)
+    //   .withGyro(COTS.ofPigeon2())
+    //   .withSwerveModule(() -> new SwerveModuleSimulation(
+    //           DCMotor.getKrakenX60(1),
+    //           DCMotor.getKrakenX60(1),
+    //           DRIVE_MOTOR_GEAR_RATIO,
+    //           TURN_MOTOR_GEAR_RATIO,
+    //           Volts.of(DRIVE_FRICTION_VOLTAGE),
+    //           Volts.of(STEER_FRICTION_VOLTAGE),
+    //           Inches.of(WHEEL_DIAMETER / 2.0),
+    //           KilogramSquareMeters.of(STEER_INERTIA),
+    //           WHEEL_COF));
+
+    public static final DriveTrainSimulationConfig mapleSimConfig = new DriveTrainSimulationConfig(
+        Kilograms.of(ROBOT_MASS), 
+        Inches.of(27 + 3.25 * 2), // 27" x 27" base + 3.25" bumpers
+        Inches.of(29 + 3.25 * 2), // 2" UTB intake
+        Inches.of(TRACK_WIDTH), 
+        Inches.of(TRACK_WIDTH), 
+        COTS.ofMark4i(
+            DCMotor.getKrakenX60(1), 
+            DCMotor.getKrakenX60(1), 
+            COTS.WHEELS.VEX_GRIP_V2.cof, 
+            3), // L3 gear ratio
+        COTS.ofPigeon2());
   }
 
   public static final class IntakeConstants{

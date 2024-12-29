@@ -7,9 +7,11 @@ package frc.robot.subsystems.Drive;
 import org.littletonrobotics.junction.Logger;
 
 // import java.text.DecimalFormat;
-
 // import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -132,15 +134,26 @@ public class Drivetrain extends SubsystemBase {
 
     // gyro = new Pigeon2(SwerveConstants.PIGEON_ID);
     this.gyroIO = gyroIO;
+
+    RobotConfig config;
+    try {
+      config = RobotConfig.fromGUISettings();
+      
+      AutoBuilder.configure(
+        this::getPose,
+        this::resetPose,
+        this::getRobotRelativeSpeeds,
+        (speeds, feedforwards) -> driveRobotRelative(speeds),
+        new PPHolonomicDriveController(
+          new PIDConstants(5.0, 0.0, 0.0),
+          new PIDConstants(5.0, 0.0, 0.0)),
+        config,
+        () -> isRedAlliance(),
+        this);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
     
-    AutoBuilder.configureHolonomic(
-      this::getPose,
-      this::resetPose,
-      this::getRobotRelativeSpeeds,
-      this::driveRobotRelative,
-      SwerveConstants.AUTO_CONFIG,
-      () -> isRedAlliance(),
-      this);
 
     lastHeading = getHeading();
 

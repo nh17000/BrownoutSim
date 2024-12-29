@@ -7,6 +7,8 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import frc.lib.drivers.PearadoxTalonFX;
 import frc.robot.Constants.SwerveConstants;
 
@@ -17,11 +19,11 @@ public class ModuleReal implements ModuleIO {
   private PIDController turnPIDController;
   private CANcoder absoluteEncoder;
 
-  private StatusSignal<Double> drivePosition;
-  private StatusSignal<Double> driveVelocity;
-  private StatusSignal<Double> turnPosition;
-  private StatusSignal<Double> turnVelocity;
-  private StatusSignal<Double> absoluteEncoderAngle;
+  private StatusSignal<Angle> drivePosition;
+  private StatusSignal<AngularVelocity> driveVelocity;
+  private StatusSignal<Angle> turnPosition;
+  private StatusSignal<AngularVelocity> turnVelocity;
+  private StatusSignal<Angle> absoluteEncoderAngle;
   private StatusSignal<Double> driveCurrent;
   private StatusSignal<Double> turnCurrent;
 
@@ -82,14 +84,6 @@ public class ModuleReal implements ModuleIO {
 
     turnPIDController = new PIDController(SwerveConstants.KP_TURNING, 0, 0);
     turnPIDController.enableContinuousInput(-Math.PI, Math.PI);
-
-    drivePosition = driveMotor.getPosition();
-    driveVelocity = driveMotor.getVelocity();
-    turnPosition = turnMotor.getPosition();
-    turnVelocity = turnMotor.getVelocity();
-    absoluteEncoderAngle = absoluteEncoder.getAbsolutePosition();
-    driveCurrent = driveMotor.getStatorCurrent();
-    turnCurrent = turnMotor.getStatorCurrent();
 
     BaseStatusSignal.setUpdateFrequencyForAll(50, drivePosition, driveVelocity, turnPosition, turnVelocity, absoluteEncoderAngle, driveCurrent, turnCurrent);
     driveMotor.optimizeBusUtilization();
