@@ -25,7 +25,7 @@ public class IntakeSim implements IntakeIO {
       "Note", 
       driveSim, 
       Inches.of(27), 
-      IntakeSimulation.IntakeSide.BACK, 
+      IntakeSimulation.IntakeSide.FRONT, 
       1);
 
     intakeSim.register();
@@ -44,16 +44,16 @@ public class IntakeSim implements IntakeIO {
     // otherwise, it's stopped
     else intakeSim.stopIntake();
 
-    if (intakeHasNote) {
-      SimulatedArena.getInstance()
-          .addGamePiece(
-              new CrescendoNoteOnField(
-                  driveSim
-                      .getSimulatedDriveTrainPose()
-                      .getTranslation()
-                      .plus(
-                          new Translation2d(0, 0.5))));
-    }
+    // if (intakeHasNote) {
+    //   SimulatedArena.getInstance()
+    //       .addGamePiece(
+    //           new CrescendoNoteOnField(
+    //               driveSim
+    //                   .getSimulatedDriveTrainPose()
+    //                   .getTranslation()
+    //                   .plus(
+    //                       new Translation2d(0, 0.5))));
+    // }
 
     // if the there is note, we do an integral to the voltage to approximate the position of the
     // note in the intake
@@ -61,18 +61,18 @@ public class IntakeSim implements IntakeIO {
     // if the note is gone, we clear the integral
     else intakeVoltageIntegralSinceNoteTaken = 0.0;
 
-    // if the integral is negative, we get rid of the note
-    if (intakeVoltageIntegralSinceNoteTaken < 0 && intakeSim.obtainGamePieceFromIntake())
-      // splits the note out by adding it on field
-      SimulatedArena.getInstance()
-          .addGamePiece(
-              new CrescendoNoteOnField(
-                  driveSim
-                      .getSimulatedDriveTrainPose()
-                      .getTranslation()
-                      .plus(
-                          new Translation2d(-0.4, 0)
-                              .rotateBy(driveSim.getSimulatedDriveTrainPose().getRotation()))));
+    // // if the integral is negative, we get rid of the note
+    // if (intakeVoltageIntegralSinceNoteTaken < 0 && intakeSim.obtainGamePieceFromIntake())
+    //   // splits the note out by adding it on field
+    //   SimulatedArena.getInstance()
+    //       .addGamePiece(
+    //           new CrescendoNoteOnField(
+    //               driveSim
+    //                   .getSimulatedDriveTrainPose()
+    //                   .getTranslation()
+    //                   .plus(
+    //                       new Translation2d(-0.4, 0)
+    //                           .rotateBy(driveSim.getSimulatedDriveTrainPose().getRotation()))));
     // if the intake have been running positive volts since the note touches the intake, it will
     // touch the fly wheels
     // else if (intakeVoltageIntegralSinceNoteTaken > 12 * 0.1

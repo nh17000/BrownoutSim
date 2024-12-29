@@ -60,13 +60,17 @@ public class ModuleSim implements ModuleIO {
     turnMotor.requestVoltage(Volts.of(turnAppliedVolts));
 
     inputs.driveCurrent = Math.abs(moduleSim.getDriveMotorSupplyCurrent().in(Amps));    
-    inputs.drivePosition = moduleSim.getDriveWheelFinalPosition().in(Radians);
-    inputs.driveVelocity = moduleSim.getDriveWheelFinalSpeed().in(RadiansPerSecond);
+    inputs.drivePosition = moduleSim.getDriveWheelFinalPosition().in(Radians) 
+      * SwerveConstants.DRIVE_MOTOR_PCONVERSION;
+    inputs.driveVelocity = moduleSim.getDriveWheelFinalSpeed().in(RadiansPerSecond) 
+      * SwerveConstants.DRIVE_MOTOR_VCONVERSION;
     inputs.driveVolts = driveAppliedVolts;
     
     inputs.turnCurrent = Math.abs(moduleSim.getSteerMotorSupplyCurrent().in(Amps));
-    inputs.turnPosition = moduleSim.getSteerAbsoluteFacing().getRadians();
-    inputs.turnVelocity = moduleSim.getSteerAbsoluteEncoderSpeed().in(RadiansPerSecond);
+    inputs.turnPosition = moduleSim.getSteerAbsoluteFacing().getRadians() 
+      * SwerveConstants.TURN_MOTOR_PCONVERSION;
+    inputs.turnVelocity = moduleSim.getSteerAbsoluteEncoderSpeed().in(RadiansPerSecond)
+      * SwerveConstants.TURN_MOTOR_VCONVERSION;
     inputs.turnVolts = turnAppliedVolts;
 
     // TODO: fix possible offset inversion

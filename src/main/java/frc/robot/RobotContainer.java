@@ -13,14 +13,10 @@ import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -92,7 +88,7 @@ public class RobotContainer {
   private final JoystickButton outtake_B = new JoystickButton(driverController, XboxController.Button.kB.value);
   private final JoystickButton turnToApril_LB = new JoystickButton(driverController, XboxController.Button.kLeftBumper.value);
   private final JoystickButton turnToNote_LS = new JoystickButton(driverController, XboxController.Button.kLeftStick.value);
-  private final JoystickButton ampAlign_Y = new JoystickButton(driverController, XboxController.Button.kY.value);
+  // private final JoystickButton ampAlign_Y = new JoystickButton(driverController, XboxController.Button.kY.value);
   //Operator Controls
   public static final CommandXboxController commandOpController = new CommandXboxController(IOConstants.OP_CONTROLLER_PORT);
   public static final XboxController opController = commandOpController.getHID();  
@@ -161,6 +157,7 @@ public class RobotContainer {
     configureAutoTab();
 
     poseEstimation = new PoseEstimation();
+    if (Robot.isSimulation()) { drivetrain.resetPose(FieldConstants.INIT_SIM_POSE); }
 
     // HttpCamera httpCamera = new HttpCamera("Limelight", "http://10.54.14.11:5800");
     // CameraServer.addCamera(httpCamera);
@@ -214,19 +211,19 @@ public class RobotContainer {
     //     0));
 
     // pathfind then follow path
-    try {
-      ampAlign_Y.whileTrue(AutoBuilder.pathfindThenFollowPath(
-          PathPlannerPath.fromPathFile("Amp Align"), 
-          new PathConstraints(
-              3, // do we want it trying to align at 3m/s
-              3, 
-              Units.degreesToRadians(540), 
-              Units.degreesToRadians(720))
-          // 3.0
-          ));
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+    // try {
+    //   ampAlign_Y.whileTrue(AutoBuilder.pathfindThenFollowPath(
+    //       PathPlannerPath.fromPathFile("Amp Align"), 
+    //       new PathConstraints(
+    //           3, // do we want it trying to align at 3m/s
+    //           3, 
+    //           Units.degreesToRadians(540), 
+    //           Units.degreesToRadians(720))
+    //       // 3.0
+    //       ));
+    // } catch (Exception e) {
+    //   e.printStackTrace();
+    // }
   }
 
   /**
@@ -242,8 +239,7 @@ public class RobotContainer {
     // else{
     //   drivetrain.setHeading(60);
     // }
-    if (Robot.isSimulation()) { drivetrain.resetPose(FieldConstants.INIT_SIM_POSE); }
-    else { drivetrain.setHeading(0); }    
+    drivetrain.setHeading(0);
 
     return autoChooser.getSelected();
   }
