@@ -4,10 +4,9 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface TransportIO {
   @AutoLog
-  public class TransportIOInputs {
+  public static class TransportIOInputs {
     public double transportCurrent = 0.0;
-    public boolean hasNote = false; // whether a note is indexed in the robot
-    // TODO: add more inputs
+    public boolean hasNote = false;
   }
 
   public default void updateInputs(TransportIOInputs inputs) {}

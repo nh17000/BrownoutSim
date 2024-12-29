@@ -2,6 +2,9 @@ package frc.lib.util;
 
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Robot;
+
+import static edu.wpi.first.units.Units.Seconds;
+
 import org.ironmaple.simulation.SimulatedArena;
 
 public class OdometryTimeStampsSim {
@@ -9,7 +12,8 @@ public class OdometryTimeStampsSim {
     final double[] odometryTimestamps = new double[5];
     for (int i = 0; i < SimulatedArena.getSimulationSubTicksIn1Period(); i++)
       odometryTimestamps[i] =
-          Timer.getFPGATimestamp() - Robot.defaultPeriodSecs + SimulatedArena.getSimulationDt().magnitude() * i;
+          Timer.getFPGATimestamp() - Robot.defaultPeriodSecs 
+          + SimulatedArena.getSimulationDt().in(Seconds) * i;
     return odometryTimestamps;
   }
 }

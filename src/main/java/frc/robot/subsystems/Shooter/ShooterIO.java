@@ -4,7 +4,7 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface ShooterIO {
   @AutoLog
-  class ShooterIOInputs {
+  public static class ShooterIOInputs {
     public double shooterPivotPos = 0.0;
     public double shooterPivotCurrent = 0.0;
 

@@ -40,10 +40,10 @@
 //   public Climber() {
 //     leftClimber = new PearadoxSparkMax(ClimberConstants.LEFT_CLIMBER_ID, MotorType.kBrushless, IdleMode.kBrake, 60, true,
 //       ClimberConstants.CLIMBER_kP, ClimberConstants.CLIMBER_kI, ClimberConstants.CLIMBER_kD, 
-//       ClimberConstants.CLIMBER_MIN_OUTPUT, ClimberConstants.CLIMBER_MAX_OUTPUT);//TODO: Check for inversion
+//       ClimberConstants.CLIMBER_MIN_OUTPUT, ClimberConstants.CLIMBER_MAX_OUTPUT);// Check for inversion
 //     rightClimber = new PearadoxSparkMax(ClimberConstants.RIGHT_CLIMBER_ID, MotorType.kBrushless, IdleMode.kBrake, 60, false,
 //       ClimberConstants.CLIMBER_kP, ClimberConstants.CLIMBER_kI, ClimberConstants.CLIMBER_kD, 
-//       ClimberConstants.CLIMBER_MIN_OUTPUT, ClimberConstants.CLIMBER_MAX_OUTPUT);//TODO: Check for inversion
+//       ClimberConstants.CLIMBER_MIN_OUTPUT, ClimberConstants.CLIMBER_MAX_OUTPUT);// Check for inversion
 
 //     leftClimberController = leftClimber.getClosedLoopController();
 //     rightClimberController = rightClimber.getClosedLoopController();

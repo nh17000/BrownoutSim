@@ -4,10 +4,9 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface IntakeIO {
   @AutoLog
-  class IntakeIOInputs {
+  public static class IntakeIOInputs {
     public double intakeCurrent = 0.0;
-    public boolean hasTarget = false; // whether the intake camera sees a note
-    // TODO: add more inputs
+    public boolean hasTarget = false;
   }
 
   public default void updateInputs(IntakeIOInputs inputs) {}

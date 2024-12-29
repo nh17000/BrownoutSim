@@ -74,7 +74,7 @@ public class Robot extends LoggedRobot {
     // autonomous chooser on the dashboard.
     try {
       m_robotContainer = new RobotContainer();
-      m_robotContainer.isSimulation = true;
+      RobotContainer.isSimulation = true;
     } catch (IOException e) {
       e.printStackTrace();
     }

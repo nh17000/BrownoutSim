@@ -18,11 +18,10 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -35,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.drivers.vision.PoseEstimation;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.IOConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.AmpBarHold;
@@ -102,8 +102,8 @@ public class RobotContainer {
   private final JoystickButton shooterAmpPassingMode_Start = new JoystickButton(opController, XboxController.Button.kStart.value);
   private final JoystickButton shooterManualMode_B = new JoystickButton(opController, XboxController.Button.kB.value);
   private final JoystickButton shooterSpeakerMode_X = new JoystickButton(opController, XboxController.Button.kX.value);
-  private final JoystickButton resetClimbSequence_LB = new JoystickButton(opController, XboxController.Button.kLeftBumper.value);
-  private final JoystickButton nextClimbSequenceStep_RB = new JoystickButton(opController, XboxController.Button.kRightBumper.value);
+  // private final JoystickButton resetClimbSequence_LB = new JoystickButton(opController, XboxController.Button.kLeftBumper.value);
+  // private final JoystickButton nextClimbSequenceStep_RB = new JoystickButton(opController, XboxController.Button.kRightBumper.value);
 
   //Pose Estimation
   public static PoseEstimation poseEstimation;
@@ -133,7 +133,7 @@ public class RobotContainer {
     } else {  
       this.swerveDriveSimulation = new SwerveDriveSimulation(
         SwerveConstants.mapleSimConfig,
-        new Pose2d(1.45, 7.33, new Rotation2d(0))); // initial starting pose on the field
+        FieldConstants.INIT_SIM_POSE); // initial starting pose on the field
 
       // register the drivetrain simulation
       SimulatedArena.getInstance().addDriveTrainSimulation(swerveDriveSimulation);  
@@ -147,10 +147,12 @@ public class RobotContainer {
         new ModuleSim(swerveDriveSimulation.getModules()[1], 1),
         new ModuleSim(swerveDriveSimulation.getModules()[2], 2),
         new ModuleSim(swerveDriveSimulation.getModules()[3], 3));
-
+      
       intake = Intake.createInstance(new IntakeSim(swerveDriveSimulation));
 
       shooter = Shooter.createInstance(new ShooterSim(swerveDriveSimulation));
+
+      DriverStation.silenceJoystickConnectionWarning(true);
     }
 
     registerNamedCommands();
@@ -240,7 +242,8 @@ public class RobotContainer {
     // else{
     //   drivetrain.setHeading(60);
     // }
-    drivetrain.setHeading(0);
+    if (Robot.isSimulation()) { drivetrain.resetPose(FieldConstants.INIT_SIM_POSE); }
+    else { drivetrain.setHeading(0); }    
 
     return autoChooser.getSelected();
   }
@@ -278,7 +281,7 @@ public class RobotContainer {
   }
 
   private void configureAutoTab() {
-    autoChooser = AutoBuilder.buildAutoChooser("Two Meters");
+    autoChooser = AutoBuilder.buildAutoChooser("A_4-6_Blue");
     autoTab.add("Auto Chooser", autoChooser).withWidget(BuiltInWidgets.kComboBoxChooser).withSize(2, 1).withPosition(4, 0);
   } 
 

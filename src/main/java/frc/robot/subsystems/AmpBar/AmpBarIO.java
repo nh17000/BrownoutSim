@@ -4,10 +4,9 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface AmpBarIO {
   @AutoLog
-  class AmpBarIOInputs {
-    public double ampBarPos = 0;
-    public double ampBarCurrent = 0;
-    // TODO: add more inputs
+  public static class AmpBarIOInputs {
+    public double ampBarPos = 0.0;
+    public double ampBarCurrent = 0.0;
   }
 
   public default void updateInputs(AmpBarIOInputs inputs) {}
