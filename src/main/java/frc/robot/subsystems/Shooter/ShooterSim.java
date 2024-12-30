@@ -170,7 +170,7 @@ public class ShooterSim implements ShooterIO {
                     // to add it to the initial velocity of the projectile
                     robotSimulationWorldPose.getRotation().rotateBy(new Rotation2d(Math.PI)), // shooter on the back of the robot
                     notePose.getZ(), // initial height of the flying note
-                    (flywheelVolts / ShooterConstants.PASSING_VOLTAGE) * 16, // we [5516] think the launching speed is proportional to the rpm, and is 16
+                    (flywheelVolts / ShooterConstants.SPEAKER_VOLTAGE) * 16, // we [5516] think the launching speed is proportional to the rpm, and is 16
                     // meters/second when the motor rpm is 6000
                     // TODO: flywheel sim
                     // shooterToRobot.getRotation().getAngle() - Math.PI / 2.0 // the note is launched at the angle of the pivot
