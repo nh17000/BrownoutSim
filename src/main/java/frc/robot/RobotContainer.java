@@ -55,9 +55,6 @@ import frc.robot.subsystems.Intake.IntakeSim;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterReal;
 import frc.robot.subsystems.Shooter.ShooterSim;
-import frc.robot.subsystems.Transport.Transport;
-
-
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -69,7 +66,6 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   public static Drivetrain drivetrain;
   public static Intake intake;
-  public static final Transport transport = Transport.getInstance();
   // public static final Climber climber = Climber.getInstance();
   public static final AmpBar ampBar = AmpBar.getInstance();
   public static Shooter shooter;

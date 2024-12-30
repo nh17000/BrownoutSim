@@ -6,14 +6,19 @@ public interface IntakeIO {
   @AutoLog
   public static class IntakeIOInputs {
     public double intakeCurrent = 0.0;
+    public double transportCurrent = 0.0;
+
+    public boolean hasNote = false;
     public boolean hasTarget = false;
   }
 
   public default void updateInputs(IntakeIOInputs inputs) {}
 
-  public default void set(double speed) {}
+  public default void setIntake(double speed) {}
+
+  public default void setTransport(double speed) {}
+
+  public default void setTransportBrakeMode(boolean brake) {}
 
   public default boolean obtainGamePieceFromIntake() { return false; }
-
-  public default boolean simHasNote() { return false; }
 }

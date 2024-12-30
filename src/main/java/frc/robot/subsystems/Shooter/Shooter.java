@@ -36,7 +36,7 @@ import frc.robot.RobotContainer;
 import frc.robot.Constants.ShooterConstants;
 // import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Drive.Drivetrain;
-import frc.robot.subsystems.Transport.Transport;
+import frc.robot.subsystems.Intake.Intake;
 
 public class Shooter extends SubsystemBase {
   // private PearadoxTalonFX leftShooter;
@@ -87,7 +87,7 @@ public class Shooter extends SubsystemBase {
 
   private ShooterMode shooterMode = ShooterMode.Auto;
 
-  private Transport transport = Transport.getInstance();
+  private Intake intake = Intake.getInstance();
 
   public static ShuffleboardTab driverTab;
   private GenericEntry leftShooterSpeedEntry;
@@ -197,7 +197,7 @@ public class Shooter extends SubsystemBase {
 
     //   rightShooter.setControl(voltage_request.withOutput(0));
     // }
-    if ((!transport.hasNote() && (((System.currentTimeMillis()) - transport.getRequestedShootTime()) > 100)) && !RobotContainer.opController.getRightBumperButton()) {
+    if ((!intake.hasNote() && (((System.currentTimeMillis()) - intake.getRequestedShootTime()) > 100)) && !RobotContainer.opController.getRightBumperButton()) {
       io.setShooterVolts(0.0, 0.0);
     }
     else if(RobotContainer.driverController.getLeftTriggerAxis() >= 0.95){ //Amp
