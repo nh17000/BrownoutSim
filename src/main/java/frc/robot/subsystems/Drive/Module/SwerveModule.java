@@ -150,7 +150,7 @@ public class SwerveModule extends SubsystemBase {
 
   public void setSpeed(SwerveModuleState desiredState){
     // driveMotor.setControl(driveMotorRequest.withOutput(desiredState.speedMetersPerSecond / SwerveConstants.DRIVETRAIN_MAX_SPEED));
-    io.setSpeed(desiredState.speedMetersPerSecond / SwerveConstants.DRIVETRAIN_MAX_SPEED);
+    io.setVelocity(desiredState.speedMetersPerSecond / (SwerveConstants.WHEEL_DIAMETER / 2.0));
   }
 
   public void setAngle(SwerveModuleState desiredState){
@@ -161,7 +161,8 @@ public class SwerveModule extends SubsystemBase {
     // turnMotor.setControl(turnMotorRequest.withOutput(turnPIDController.calculate(getTurnMotorPosition(), desiredState.angle.getRadians())));
 
     // io.setAngle(getTurnMotorPosition(), desiredState.angle.getRadians());
-    io.setAngle(getTurnMotorPosition(), angle.getRadians());
+    // io.setAngle(getTurnMotorPosition(), angle.getRadians());
+    io.setAngle(angle);
 
     lastAngle = angle;
   }
@@ -169,7 +170,8 @@ public class SwerveModule extends SubsystemBase {
   public void stop(){
     // driveMotor.setControl(driveMotorRequest.withOutput(0));
     // turnMotor.setControl(turnMotorRequest.withOutput(0));
-    io.stop();
+    io.setDriveOpenLoop(0.0);
+    io.setTurnOpenLoop(0.0);
   }
 
   public int getDeviceID(){

@@ -27,6 +27,7 @@ public class AmpBarReal implements AmpBarIO {
   public void updateInputs(AmpBarIOInputs inputs) {
     inputs.ampBarPos = ampBarEncoder.getPosition();
     inputs.ampBarCurrent = ampBar.getOutputCurrent();
+    inputs.ampBarVolts = ampBar.getAppliedOutput();
   }
 
   @Override

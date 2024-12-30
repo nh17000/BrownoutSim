@@ -2,16 +2,20 @@ package frc.robot.subsystems.Drive.Module;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+
 public interface ModuleIO {
   @AutoLog
-  class ModuleIOInputs {
+  public static class ModuleIOInputs {
     public double driveCurrent = 0.0;
     public double drivePosition = 0.0;
     public double driveVelocity = 0.0;    
+    public double driveVolts = 0.0;    
     
     public double turnCurrent = 0.0;
     public double turnPosition = 0.0;
     public double turnVelocity = 0.0;
+    public double turnVolts = 0.0;
 
     public double absoluteWheelAngleDeg = 0.0;
     public double turnAngle = 0.0;
@@ -24,11 +28,13 @@ public interface ModuleIO {
 
   public default void resetEncoders() {}
 
-  public default void setSpeed(double speed) {}
+  public default void setVelocity(double speed) {}
 
-  public default void setAngle(double currPos, double angleRadians) {}
+  public default void setAngle(Rotation2d angle) {}
 
-  public default void stop() {}
+  public default void setDriveOpenLoop(double output) {}
+
+  public default void setTurnOpenLoop(double output) {}
 
   public int getDeviceID();
 }

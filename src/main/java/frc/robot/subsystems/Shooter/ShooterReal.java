@@ -57,6 +57,9 @@ public class ShooterReal implements ShooterIO {
     inputs.leftShooterSpeed = leftShooter.getVelocity().getValueAsDouble() * 60.0;
     inputs.rightShooterSpeed = rightShooter.getVelocity().getValueAsDouble() * 60.0;
 
+    inputs.leftShooterVolts = leftShooter.getMotorVoltage().getValueAsDouble();
+    inputs.rightShooterVolts = rightShooter.getMotorVoltage().getValueAsDouble();
+
     inputs.leftShooterStatorCurrent = leftShooter.getStatorCurrent().getValueAsDouble();
     inputs.rightShooterStatorCurrent = rightShooter.getStatorCurrent().getValueAsDouble();
     inputs.leftShooterSupplyCurrent = leftShooter.getSupplyCurrent().getValueAsDouble();

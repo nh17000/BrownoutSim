@@ -10,6 +10,8 @@ package frc.robot.subsystems.Shooter;
 
 import java.util.Map;
 
+import org.littletonrobotics.junction.Logger;
+
 // import com.ctre.phoenix6.controls.VoltageOut;
 // import com.ctre.phoenix6.signals.NeutralModeValue;
 // import com.revrobotics.RelativeEncoder;
@@ -34,8 +36,7 @@ import frc.robot.RobotContainer;
 import frc.robot.Constants.ShooterConstants;
 // import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Drive.Drivetrain;
-import frc.robot.subsystems.Transport.Transport;
-
+import frc.robot.subsystems.Intake.Intake;
 public class Shooter extends SubsystemBase {
   // private PearadoxTalonFX leftShooter;
   // private PearadoxTalonFX rightShooter;
@@ -55,8 +56,8 @@ public class Shooter extends SubsystemBase {
   // private double[] botpose_targetspace = new double[6];
   public static final Drivetrain drivetrain = Drivetrain.getInstance();
 
-  private LerpTable pivotLerp = new LerpTable();
-  private LerpTable shooterLerp = new LerpTable();
+  protected LerpTable pivotLerp = new LerpTable();
+  protected LerpTable shooterLerp = new LerpTable();
 
   private static Shooter SHOOTER_KRAKEN;
 
@@ -85,8 +86,6 @@ public class Shooter extends SubsystemBase {
 
   private ShooterMode shooterMode = ShooterMode.Auto;
 
-  private Transport transport = Transport.getInstance();
-
   public static ShuffleboardTab driverTab;
   private GenericEntry leftShooterSpeedEntry;
   private GenericEntry rightShooterSpeedEntry;
@@ -94,6 +93,8 @@ public class Shooter extends SubsystemBase {
   private GenericEntry pivotAdjustEntry;
   private GenericEntry hasPriorityTargetEntry;
   // private VoltageOut voltage_request = new VoltageOut(0);
+
+  private Intake intake = Intake.getInstance();
 
   public Shooter(ShooterIO io) {
     // leftShooter = new PearadoxTalonFX(ShooterConstants.LEFT_SHOOTER_ID, NeutralModeValue.Coast, 50, true); 
@@ -162,7 +163,16 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-    io.updateInputs(inputs); 
+    io.updateInputs(inputs);
+    Logger.processInputs("Shooter", inputs);
+
+    double notePos = intake.getNotePosition();
+    if (notePos >= 0.9 && intake.obtainGamePieceFromIntake()) {
+      io.visualizeNote(-1);
+      io.shootNote();
+    } else {
+      io.visualizeNote(notePos);
+    }
     
     // This method will be called once per scheduler run
     SmarterDashboard.putString("Shooter Mode", getShooterMode().toString(), "Shooter");
@@ -194,10 +204,11 @@ public class Shooter extends SubsystemBase {
 
     //   rightShooter.setControl(voltage_request.withOutput(0));
     // }
-    if ((!transport.hasNote() && (((System.currentTimeMillis()) - transport.getRequestedShootTime()) > 100)) && !RobotContainer.opController.getRightBumperButton()) {
+    if ((!intake.hasNote() && (((System.currentTimeMillis()) - intake.getRequestedShootTime()) > 100)) && !RobotContainer.opController.getRightBumperButton()) {
       io.setShooterVolts(0.0, 0.0);
     }
-    else if(RobotContainer.driverController.getLeftTriggerAxis() >= 0.95){ //Amp
+    // else 
+    if(RobotContainer.driverController.getLeftTriggerAxis() >= 0.95){ //Amp
       io.setShooterVolts(ShooterConstants.AMP_VOLTAGE, ShooterConstants.AMP_VOLTAGE);
     }
     else if(shooterMode == ShooterMode.SourcePassing){

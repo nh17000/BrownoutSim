@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.Intake;
 
+import org.littletonrobotics.junction.Logger;
+
 // import com.revrobotics.CANSparkBase.IdleMode;
 // import com.revrobotics.CANSparkLowLevel.MotorType;
 
@@ -21,18 +23,15 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 // import frc.lib.util.SmarterDashboard;
 // import frc.robot.Constants.IntakeConstants;
 // import frc.robot.Constants.VisionConstants;
-import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.TransportConstants;
 
 public class Intake extends SubsystemBase {
-  // private PearadoxSparkMax utbRoller;
-
   private boolean rumbled = false;
+  private boolean transportIsHolding = true;
 
-  // private Debouncer debouncer;
-
-  // private static final NetworkTable llTable = NetworkTableInstance.getDefault().getTable(VisionConstants.INTAKE_LL_NAME);
+  private long shootTime = 0;
 
   private static Intake INTAKE;
 
@@ -57,37 +56,42 @@ public class Intake extends SubsystemBase {
 
   /** Creates a new Intake. */
   private Intake(IntakeIO io) {
-    // utbRoller = new PearadoxSparkMax(IntakeConstants.UTB_ROLLER_ID, MotorType.kBrushless, IdleMode.kCoast, 80, false);
-    // debouncer = new Debouncer(0.5, DebounceType.kRising);
     this.io = io;
   }
 
   @Override
   public void periodic() {
-    // SmarterDashboard.putNumber("Intake Current", utbRoller.getOutputCurrent(), "Intake");
-    // SmarterDashboard.putBoolean("Intake Has Target", hasTarget(), "Intake");
-
     io.updateInputs(inputs);
+    Logger.processInputs("Intake", inputs);
 
-    if(!rumbled && inputs.intakeCurrent > IntakeConstants.RUMBLE_AT_CURRENT){
+    if(transportIsHolding){
+      if(hasNote() && !(inputs.notePosition >= 0 && inputs.notePosition < 0.5)){
+        transportStop();
+      }
+      else{
+        transportHold();
+      }
+    }
+
+    if(!rumbled && (inputs.intakeCurrent > IntakeConstants.RUMBLE_AT_CURRENT || hasNote())){
       CommandScheduler.getInstance().schedule(rumbleController());
       rumbled = true;
     }
-    if(rumbled && !(inputs.intakeCurrent > IntakeConstants.RUMBLE_AT_CURRENT)){
+    if(rumbled && !(inputs.intakeCurrent > IntakeConstants.RUMBLE_AT_CURRENT || hasNote())){
       rumbled = false;
     }
   }
 
   public void utbIntakeIn(){
-    io.set(IntakeConstants.INTAKE_IN_SPEED);
+    io.setIntake(IntakeConstants.INTAKE_IN_SPEED);
   }
 
   public void utbIntakeOut(){
-    io.set(IntakeConstants.INTAKE_OUT_SPEED);
+    io.setIntake(IntakeConstants.INTAKE_OUT_SPEED);
   }
 
   public void utbIntakeStop(){
-    io.set(0);
+    io.setIntake(0);
   }
 
   public Command rumbleController(){
@@ -101,15 +105,45 @@ public class Intake extends SubsystemBase {
   public boolean hasTarget(){
     return inputs.hasTarget;
   }
-
-  public boolean obtainNoteFromIntakeSim() {
-    if (Robot.isReal()) return false;
-    return io.obtainGamePieceFromIntake();
+  
+  public boolean hasNote(){
+    return inputs.hasNote;
   }
 
-  // because the intake sim is 
-  public boolean simHasNote() {
-    if (Robot.isReal()) return false;
-    return io.simHasNote();
+  public void transportHold(){
+    io.setTransport(TransportConstants.TRANSPORT_HOLD_SPEED);
+  }
+
+  public void transportOut(){
+    io.setTransport(TransportConstants.TRANSPORT_OUT_SPEED);
+  }
+
+  public void transportStop(){
+    io.setTransport(0);
+  }
+
+  public void transportShoot(){    
+    shootTime = System.currentTimeMillis();
+    io.setTransport(TransportConstants.TRANSPORT_SHOOT_SPEED);
+  }
+
+  public void setTransportBrakeMode(boolean brake){
+    io.setTransportBrakeMode(brake);
+  }
+
+  public long getRequestedShootTime(){
+    return shootTime;
+  }
+
+  public void setTransportIsHolding(boolean isHolding){
+    this.transportIsHolding = isHolding;
+  }
+
+  public double getNotePosition() {
+    return inputs.notePosition;
+  }
+
+  public boolean obtainGamePieceFromIntake() {
+    return io.obtainGamePieceFromIntake();
   }
 }

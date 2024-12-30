@@ -4,17 +4,25 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface IntakeIO {
   @AutoLog
-  class IntakeIOInputs {
+  public static class IntakeIOInputs {
     public double intakeCurrent = 0.0;
-    public boolean hasTarget = false; // whether the intake camera sees a note
-    // TODO: add more inputs
+    public double intakeVolts = 0.0;
+    public double transportCurrent = 0.0;
+    public double transportVolts = 0.0;
+
+    public double notePosition = -1.0;
+
+    public boolean hasNote = true;
+    public boolean hasTarget = false;
   }
 
   public default void updateInputs(IntakeIOInputs inputs) {}
 
-  public default void set(double speed) {}
+  public default void setIntake(double speed) {}
+
+  public default void setTransport(double speed) {}
+
+  public default void setTransportBrakeMode(boolean brake) {}
 
   public default boolean obtainGamePieceFromIntake() { return false; }
-
-  public default boolean simHasNote() { return false; }
 }

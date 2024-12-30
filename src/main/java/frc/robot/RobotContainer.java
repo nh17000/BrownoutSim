@@ -13,16 +13,11 @@ import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -35,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.drivers.vision.PoseEstimation;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.IOConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.AmpBarHold;
@@ -59,9 +55,6 @@ import frc.robot.subsystems.Intake.IntakeSim;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterReal;
 import frc.robot.subsystems.Shooter.ShooterSim;
-import frc.robot.subsystems.Transport.Transport;
-
-
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -73,7 +66,6 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   public static Drivetrain drivetrain;
   public static Intake intake;
-  public static final Transport transport = Transport.getInstance();
   // public static final Climber climber = Climber.getInstance();
   public static final AmpBar ampBar = AmpBar.getInstance();
   public static Shooter shooter;
@@ -92,7 +84,7 @@ public class RobotContainer {
   private final JoystickButton outtake_B = new JoystickButton(driverController, XboxController.Button.kB.value);
   private final JoystickButton turnToApril_LB = new JoystickButton(driverController, XboxController.Button.kLeftBumper.value);
   private final JoystickButton turnToNote_LS = new JoystickButton(driverController, XboxController.Button.kLeftStick.value);
-  private final JoystickButton ampAlign_Y = new JoystickButton(driverController, XboxController.Button.kY.value);
+  // private final JoystickButton ampAlign_Y = new JoystickButton(driverController, XboxController.Button.kY.value);
   //Operator Controls
   public static final CommandXboxController commandOpController = new CommandXboxController(IOConstants.OP_CONTROLLER_PORT);
   public static final XboxController opController = commandOpController.getHID();  
@@ -102,8 +94,8 @@ public class RobotContainer {
   private final JoystickButton shooterAmpPassingMode_Start = new JoystickButton(opController, XboxController.Button.kStart.value);
   private final JoystickButton shooterManualMode_B = new JoystickButton(opController, XboxController.Button.kB.value);
   private final JoystickButton shooterSpeakerMode_X = new JoystickButton(opController, XboxController.Button.kX.value);
-  private final JoystickButton resetClimbSequence_LB = new JoystickButton(opController, XboxController.Button.kLeftBumper.value);
-  private final JoystickButton nextClimbSequenceStep_RB = new JoystickButton(opController, XboxController.Button.kRightBumper.value);
+  // private final JoystickButton resetClimbSequence_LB = new JoystickButton(opController, XboxController.Button.kLeftBumper.value);
+  // private final JoystickButton nextClimbSequenceStep_RB = new JoystickButton(opController, XboxController.Button.kRightBumper.value);
 
   //Pose Estimation
   public static PoseEstimation poseEstimation;
@@ -133,7 +125,7 @@ public class RobotContainer {
     } else {  
       this.swerveDriveSimulation = new SwerveDriveSimulation(
         SwerveConstants.mapleSimConfig,
-        new Pose2d(1.45, 7.33, new Rotation2d(0))); // initial starting pose on the field
+        FieldConstants.INIT_SIM_POSE); // initial starting pose on the field
 
       // register the drivetrain simulation
       SimulatedArena.getInstance().addDriveTrainSimulation(swerveDriveSimulation);  
@@ -147,10 +139,12 @@ public class RobotContainer {
         new ModuleSim(swerveDriveSimulation.getModules()[1], 1),
         new ModuleSim(swerveDriveSimulation.getModules()[2], 2),
         new ModuleSim(swerveDriveSimulation.getModules()[3], 3));
-
+      
       intake = Intake.createInstance(new IntakeSim(swerveDriveSimulation));
 
       shooter = Shooter.createInstance(new ShooterSim(swerveDriveSimulation));
+
+      DriverStation.silenceJoystickConnectionWarning(true);
     }
 
     registerNamedCommands();
@@ -159,6 +153,7 @@ public class RobotContainer {
     configureAutoTab();
 
     poseEstimation = new PoseEstimation();
+    if (Robot.isSimulation()) { drivetrain.resetPose(FieldConstants.INIT_SIM_POSE); }
 
     // HttpCamera httpCamera = new HttpCamera("Limelight", "http://10.54.14.11:5800");
     // CameraServer.addCamera(httpCamera);
@@ -212,19 +207,19 @@ public class RobotContainer {
     //     0));
 
     // pathfind then follow path
-    try {
-      ampAlign_Y.whileTrue(AutoBuilder.pathfindThenFollowPath(
-          PathPlannerPath.fromPathFile("Amp Align"), 
-          new PathConstraints(
-              3, // do we want it trying to align at 3m/s
-              3, 
-              Units.degreesToRadians(540), 
-              Units.degreesToRadians(720))
-          // 3.0
-          ));
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+    // try {
+    //   ampAlign_Y.whileTrue(AutoBuilder.pathfindThenFollowPath(
+    //       PathPlannerPath.fromPathFile("Amp Align"), 
+    //       new PathConstraints(
+    //           3, // do we want it trying to align at 3m/s
+    //           3, 
+    //           Units.degreesToRadians(540), 
+    //           Units.degreesToRadians(720))
+    //       // 3.0
+    //       ));
+    // } catch (Exception e) {
+    //   e.printStackTrace();
+    // }
   }
 
   /**
@@ -278,7 +273,7 @@ public class RobotContainer {
   }
 
   private void configureAutoTab() {
-    autoChooser = AutoBuilder.buildAutoChooser("Two Meters");
+    autoChooser = AutoBuilder.buildAutoChooser("A_4-6_Blue");
     autoTab.add("Auto Chooser", autoChooser).withWidget(BuiltInWidgets.kComboBoxChooser).withSize(2, 1).withPosition(4, 0);
   } 
 

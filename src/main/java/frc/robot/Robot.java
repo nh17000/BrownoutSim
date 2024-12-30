@@ -20,8 +20,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Drive.Drivetrain;
+import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Shooter.Shooter;
-import frc.robot.subsystems.Transport.Transport;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -32,8 +32,8 @@ import frc.robot.subsystems.Transport.Transport;
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
   private Drivetrain drivetrain;
-  private Transport transport;
   private Shooter shooter;
+  private Intake intake;
   private static final NetworkTable llTable = NetworkTableInstance.getDefault().getTable(VisionConstants.SHOOTER_LL_NAME);
 
 
@@ -74,7 +74,7 @@ public class Robot extends LoggedRobot {
     // autonomous chooser on the dashboard.
     try {
       m_robotContainer = new RobotContainer();
-      m_robotContainer.isSimulation = true;
+      RobotContainer.isSimulation = true;
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -82,7 +82,7 @@ public class Robot extends LoggedRobot {
     // gets these after robotContainer has been created
     drivetrain = Drivetrain.getInstance();
     shooter = Shooter.getInstance();
-    transport = Transport.getInstance();
+    intake = Intake.getInstance();
   }
 
   /**
@@ -107,7 +107,7 @@ public class Robot extends LoggedRobot {
   public void disabledInit() {
     drivetrain.setAllIdleMode(true);
     shooter.setBrakeMode(false);
-    transport.setBrakeMode(false);
+    intake.setTransportBrakeMode(false);
   }
 
   @Override
@@ -118,7 +118,8 @@ public class Robot extends LoggedRobot {
   public void autonomousInit() {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
     shooter.setBrakeMode(true);
-    transport.setBrakeMode(true);
+    intake.setTransportBrakeMode(true);
+    intake.utbIntakeIn();
     drivetrain.changeIntakePipeline(1);
     shooter.setCurrentLimit(65);
 
@@ -152,7 +153,7 @@ public class Robot extends LoggedRobot {
     drivetrain.resetAllEncoders();
     drivetrain.setAllIdleMode(true);
     shooter.setBrakeMode(true);
-    transport.setBrakeMode(true);
+    intake.setTransportBrakeMode(true);
     drivetrain.changeIntakePipeline(1);
     shooter.setCurrentLimit(50);
 

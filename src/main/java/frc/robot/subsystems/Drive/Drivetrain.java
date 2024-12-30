@@ -10,8 +10,8 @@ import org.littletonrobotics.junction.Logger;
 // import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
-import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -135,25 +135,24 @@ public class Drivetrain extends SubsystemBase {
     // gyro = new Pigeon2(SwerveConstants.PIGEON_ID);
     this.gyroIO = gyroIO;
 
-    RobotConfig config;
-    try {
-      config = RobotConfig.fromGUISettings();
-      
-      AutoBuilder.configure(
-        this::getPose,
-        this::resetPose,
-        this::getRobotRelativeSpeeds,
-        (speeds, feedforwards) -> driveRobotRelative(speeds),
-        new PPHolonomicDriveController(
-          new PIDConstants(5.0, 0.0, 0.0),
-          new PIDConstants(5.0, 0.0, 0.0)),
-        config,
-        () -> isRedAlliance(),
-        this);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    
+    AutoBuilder.configure(
+      this::getPose,
+      this::resetPose,
+      this::getRobotRelativeSpeeds,
+      this::driveRobotRelative,
+      new PPHolonomicDriveController(
+        new PIDConstants(5.0, 0.0, 0.0),
+        new PIDConstants(5.0, 0.0, 0.0)),
+      SwerveConstants.PATHPLANNER_CONFIG,
+      () -> isRedAlliance(),
+      this);
+
+    PathPlannerLogging.setLogActivePathCallback((activePath) -> {
+      Logger.recordOutput("Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
+    });
+    PathPlannerLogging.setLogTargetPoseCallback((targetPose) -> {
+      Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
+    });
 
     lastHeading = getHeading();
 
@@ -168,6 +167,8 @@ public class Drivetrain extends SubsystemBase {
   @Override
   public void periodic() {
     gyroIO.updateInputs(gyroInputs);
+    Logger.processInputs("Drive/Gyro", gyroInputs);
+
     RobotContainer.poseEstimation.updateOdometry(getHeadingRotation2d(), getModulePositions());
 
     SmarterDashboard.putString("Drive Mode", getDriveMode().toString(), "Drivetrain");
