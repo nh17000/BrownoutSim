@@ -36,6 +36,7 @@ import frc.robot.RobotContainer;
 import frc.robot.Constants.ShooterConstants;
 // import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Drive.Drivetrain;
+import frc.robot.subsystems.Intake.Intake;
 public class Shooter extends SubsystemBase {
   // private PearadoxTalonFX leftShooter;
   // private PearadoxTalonFX rightShooter;
@@ -92,6 +93,8 @@ public class Shooter extends SubsystemBase {
   private GenericEntry pivotAdjustEntry;
   private GenericEntry hasPriorityTargetEntry;
   // private VoltageOut voltage_request = new VoltageOut(0);
+
+  private Intake intake = Intake.getInstance();
 
   public Shooter(ShooterIO io) {
     // leftShooter = new PearadoxTalonFX(ShooterConstants.LEFT_SHOOTER_ID, NeutralModeValue.Coast, 50, true); 
@@ -162,6 +165,14 @@ public class Shooter extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Shooter", inputs);
+
+    double notePos = intake.getNotePosition();
+    if (notePos >= 0.9 && intake.obtainGamePieceFromIntake()) {
+      io.visualizeNote(-1);
+      io.shootNote();
+    } else {
+      io.visualizeNote(notePos);
+    }
     
     // This method will be called once per scheduler run
     SmarterDashboard.putString("Shooter Mode", getShooterMode().toString(), "Shooter");
@@ -193,9 +204,9 @@ public class Shooter extends SubsystemBase {
 
     //   rightShooter.setControl(voltage_request.withOutput(0));
     // }
-    // if ((!intake.hasNote() && (((System.currentTimeMillis()) - intake.getRequestedShootTime()) > 100)) && !RobotContainer.opController.getRightBumperButton()) {
-    //   io.setShooterVolts(0.0, 0.0);
-    // }
+    if ((!intake.hasNote() && (((System.currentTimeMillis()) - intake.getRequestedShootTime()) > 100)) && !RobotContainer.opController.getRightBumperButton()) {
+      io.setShooterVolts(0.0, 0.0);
+    }
     // else 
     if(RobotContainer.driverController.getLeftTriggerAxis() >= 0.95){ //Amp
       io.setShooterVolts(ShooterConstants.AMP_VOLTAGE, ShooterConstants.AMP_VOLTAGE);

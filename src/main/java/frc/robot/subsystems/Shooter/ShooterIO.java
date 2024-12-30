@@ -43,6 +43,8 @@ public interface ShooterIO {
   public double calculatePivotAngle(boolean isRedAlliance);
 
   public boolean hasPriorityTarget(boolean isRedAlliance);
+  
+  public default void visualizeNote(double pos) {}
 
   public default void shootNote() {}
 }

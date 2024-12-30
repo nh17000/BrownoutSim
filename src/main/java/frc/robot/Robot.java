@@ -119,6 +119,7 @@ public class Robot extends LoggedRobot {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
     shooter.setBrakeMode(true);
     intake.setTransportBrakeMode(true);
+    intake.utbIntakeIn();
     drivetrain.changeIntakePipeline(1);
     shooter.setCurrentLimit(65);
 

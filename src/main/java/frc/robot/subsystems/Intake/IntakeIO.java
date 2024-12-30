@@ -10,6 +10,8 @@ public interface IntakeIO {
     public double transportCurrent = 0.0;
     public double transportVolts = 0.0;
 
+    public double notePosition = -1.0;
+
     public boolean hasNote = true;
     public boolean hasTarget = false;
   }

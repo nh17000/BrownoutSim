@@ -65,7 +65,7 @@ public class Intake extends SubsystemBase {
     Logger.processInputs("Intake", inputs);
 
     if(transportIsHolding){
-      if(hasNote()){
+      if(hasNote() && !(inputs.notePosition >= 0 && inputs.notePosition < 0.5)){
         transportStop();
       }
       else{
@@ -137,5 +137,13 @@ public class Intake extends SubsystemBase {
 
   public void setTransportIsHolding(boolean isHolding){
     this.transportIsHolding = isHolding;
+  }
+
+  public double getNotePosition() {
+    return inputs.notePosition;
+  }
+
+  public boolean obtainGamePieceFromIntake() {
+    return io.obtainGamePieceFromIntake();
   }
 }

@@ -8,14 +8,14 @@ import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
 import org.ironmaple.simulation.seasonspecific.crescendo2024.CrescendoNoteOnField;
 
 import edu.wpi.first.math.geometry.Translation2d;
-import frc.robot.subsystems.Shooter.Shooter;
+import frc.robot.Constants.TransportConstants;
 
 public class IntakeSim implements IntakeIO {
   private final IntakeSimulation intakeSim; 
 
   private final AbstractDriveTrainSimulation driveSim;
 
-  private double intakeVoltage = 0.0, transportVoltage = 0.0;
+  private double intakeVoltage = 0.0, transportVoltage = 0.0, notePosition = -1;
 
   public IntakeSim(AbstractDriveTrainSimulation driveSim) {
     intakeSim = IntakeSimulation.InTheFrameIntake(
@@ -42,12 +42,14 @@ public class IntakeSim implements IntakeIO {
     // inputs
     inputs.hasNote = intakeSim.getGamePiecesAmount() != 0;
 
+    notePosition = inputs.hasNote ? Math.max(0, Math.min(notePosition, 1)) : -1;
+
+    inputs.notePosition = this.notePosition;
+
     // if the intake voltage is higher than 2 volts, it is considered running
     if (intakeVoltage > 4) intakeSim.startIntake();
     // otherwise, it's stopped
     else intakeSim.stopIntake();
-
-    // TODO: visualize note in robot
   }
 
   @Override
@@ -57,20 +59,39 @@ public class IntakeSim implements IntakeIO {
 
   @Override
   public void setTransport(double speed) {
-    if (speed > 0.35 /* && intakeSim.obtainGamePieceFromIntake() */) { 
+    transportVoltage = speed * 12;
+    if (speed > TransportConstants.TRANSPORT_HOLD_SPEED) { // shoot
+      notePosition += speed * 0.25;
+
       // note: do not call Shooter.getInstance() before a Shooter instance is created
-      Shooter.getInstance().shootNote(); 
-    } else if (speed < -0.35 /* && intakeSim.obtainGamePieceFromIntake() */) {
+      // if (notePosition >= 0.9 && intakeSim.obtainGamePieceFromIntake()) {
+      //   try {
+      //     Shooter.getInstance().shootNote();
+      //   } catch (IllegalStateException e) {
+      //     e.printStackTrace();
+      //   }
+      // }
+    } else if (notePosition > -1) { // outtake/hold
+      // holds at pos 0.5, will decrease below 0.5 if negative
+      notePosition = Math.min(notePosition + (speed * 0.25), 0.5); 
+      
       // splits the note out by adding it on field
-      SimulatedArena.getInstance()
-          .addGamePiece(
-              new CrescendoNoteOnField(
-                  driveSim
-                      .getSimulatedDriveTrainPose()
-                      .getTranslation()
-                      .plus(
-                          new Translation2d(0.4, 0)
-                              .rotateBy(driveSim.getSimulatedDriveTrainPose().getRotation()))));
+      if (speed < 0 && notePosition <= 0.1 && intakeSim.obtainGamePieceFromIntake()) {
+        SimulatedArena.getInstance()
+            .addGamePiece(
+                new CrescendoNoteOnField(
+                    driveSim
+                        .getSimulatedDriveTrainPose()
+                        .getTranslation()
+                        .plus(
+                            new Translation2d(0.6, 0)
+                                .rotateBy(driveSim.getSimulatedDriveTrainPose().getRotation()))));
+      }
     }
+  }
+
+  @Override
+  public boolean obtainGamePieceFromIntake() {
+    return intakeSim.obtainGamePieceFromIntake();
   }
 }
