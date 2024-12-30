@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.Transport;
 
+import org.littletonrobotics.junction.Logger;
+
 // import com.revrobotics.CANSparkBase.IdleMode;
 // import com.revrobotics.CANSparkLowLevel.MotorType;
 
@@ -63,6 +65,7 @@ public class Transport extends SubsystemBase {
     //   transportShoot();
     // }
     io.updateInputs(inputs);
+    Logger.processInputs("Transport", inputs);
 
     if(isHolding){
       if(hasNote()){

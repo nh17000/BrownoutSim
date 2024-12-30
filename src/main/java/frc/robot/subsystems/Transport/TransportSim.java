@@ -13,6 +13,10 @@ public class TransportSim implements TransportIO {
 
   @Override
   public void updateInputs(TransportIOInputs inputs) {
+    // TODO: combine transport and intake subsystems
+    // it's weird that the hasNote variable is part of the transport subsystem and not the intake
+    // while ML note detection is handled by the intake subsystem
+    // it made more sense before being hardware abstracted
     inputs.hasNote = intake.simHasNote();
   }
 

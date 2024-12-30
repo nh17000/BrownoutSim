@@ -6,47 +6,67 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import frc.lib.util.LerpTable;
+import frc.robot.Constants.AmpBarConstants;
 
 public class AmpBarSim implements AmpBarIO {
+  private double angle = 0.0, volts = 0.0, intendedAngle = angle;
+
   private final SingleJointedArmSim armSim = new SingleJointedArmSim(
-    DCMotor.getNEO(1), // i think it's a neo
-    50, // ?
+    DCMotor.getNEO(1),
+    25, // 25:1 gearbox connected to a 15-30 tooth sprocket
     SingleJointedArmSim.estimateMOI(Units.inchesToMeters(24.33), 2.07),
-    Units.inchesToMeters(24.33), // check onshape
-    Units.degreesToRadians(135), 
-    Units.degreesToRadians(-60), 
+    Units.inchesToMeters(24.33),
+    Units.degreesToRadians(-90),
+    Units.degreesToRadians(135),
     false, 
-    0);
+    angle);
+
+  private LerpTable posToRadLerp = new LerpTable();
 
   private final PIDController controller;
 
-  private final Translation3d AMP_BAR_TRANSLATION_ON_ROBOT = new Translation3d(0.068, 0, 0.632);
 
   public AmpBarSim() {
-    controller = new PIDController(0, 0, 0);
-    armSim.setState(0, 0);
+    armSim.setState(angle, 0.0);
+
+    controller = new PIDController(
+      AmpBarConstants.AMP_BAR_SIM_kP, 0.0, 0.0);     
+
+    posToRadLerp.addPoint(AmpBarConstants.STOWED_ROT,   Units.degreesToRadians(130));
+    posToRadLerp.addPoint(AmpBarConstants.DEFENSE_ROT,  Units.degreesToRadians(0));
+    posToRadLerp.addPoint(AmpBarConstants.DEPLOYED_ROT, Units.degreesToRadians(-60));
   }
   
   @Override
   public void updateInputs(AmpBarIOInputs inputs) {
     armSim.update(0.02);
-    inputs.ampBarCurrent = armSim.getCurrentDrawAmps();
-    // TODO: convert encoder values (roughly -20 to -1) to the actual angle of the arm (-135 to 60)
-    inputs.ampBarPos = armSim.getAngleRads(); 
+    // if (armSim.hasHitUpperLimit() || armSim.hasHitLowerLimit()) System.err.println("uh oh");
+    this.angle = armSim.getAngleRads();
 
-    Pose3d ampBarPoseToRobot =
-                new Pose3d(AMP_BAR_TRANSLATION_ON_ROBOT, new Rotation3d(0, armSim.getAngleRads(), 0));
-    Logger.recordOutput("MechanismPoses/Amp Bar", new Pose3d[] {ampBarPoseToRobot});
+    inputs.ampBarCurrent = armSim.getCurrentDrawAmps();
+    inputs.ampBarPos = this.angle; 
+    inputs.ampBarIntendedPos = this.intendedAngle;
+    inputs.ampBarVolts = this.volts;
+
+    Logger.recordOutput("MechanismPoses/Amp Bar", new Pose3d(
+      AmpBarConstants.AMP_BAR_TRANSLATION_ON_ROBOT, new Rotation3d(0, this.angle, 0)));
+
+    Logger.recordOutput("MechanismPoses/Amp Bar Intended", new Pose3d(
+      AmpBarConstants.AMP_BAR_TRANSLATION_ON_ROBOT, new Rotation3d(0, this.intendedAngle, 0)));
   }
   
   @Override
   public void setReference(double reference) {
-    armSim.setInputVoltage(MathUtil.clamp(
-      controller.calculate(armSim.getAngleRads(), reference), -12, 12));
-    controller.reset(); // ?
+    intendedAngle = posToRadLerp.interpolate(reference);
+
+    volts = MathUtil.clamp(
+      controller.calculate(armSim.getAngleRads(), intendedAngle),
+      -12, 12);
+
+    armSim.setInputVoltage(volts);
   }
 }

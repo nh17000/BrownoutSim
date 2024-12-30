@@ -73,7 +73,6 @@ public class ModuleSim implements ModuleIO {
       * SwerveConstants.TURN_MOTOR_VCONVERSION;
     inputs.turnVolts = turnAppliedVolts;
 
-    // TODO: fix possible offset inversion
     inputs.absoluteWheelAngleDeg = moduleSim.getSteerAbsoluteFacing().getDegrees();
     if (turnRelativeOffset == Double.MIN_VALUE && Math.abs(inputs.absoluteWheelAngleDeg) >= 1) {
       turnRelativeOffset = inputs.absoluteWheelAngleDeg + inputs.turnPosition;

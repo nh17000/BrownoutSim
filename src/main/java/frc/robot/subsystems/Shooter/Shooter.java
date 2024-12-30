@@ -10,6 +10,8 @@ package frc.robot.subsystems.Shooter;
 
 import java.util.Map;
 
+import org.littletonrobotics.junction.Logger;
+
 // import com.ctre.phoenix6.controls.VoltageOut;
 // import com.ctre.phoenix6.signals.NeutralModeValue;
 // import com.revrobotics.RelativeEncoder;
@@ -55,8 +57,8 @@ public class Shooter extends SubsystemBase {
   // private double[] botpose_targetspace = new double[6];
   public static final Drivetrain drivetrain = Drivetrain.getInstance();
 
-  private LerpTable pivotLerp = new LerpTable();
-  private LerpTable shooterLerp = new LerpTable();
+  protected LerpTable pivotLerp = new LerpTable();
+  protected LerpTable shooterLerp = new LerpTable();
 
   private static Shooter SHOOTER_KRAKEN;
 
@@ -162,7 +164,8 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-    io.updateInputs(inputs); 
+    io.updateInputs(inputs);
+    Logger.processInputs("Shooter", inputs);
     
     // This method will be called once per scheduler run
     SmarterDashboard.putString("Shooter Mode", getShooterMode().toString(), "Shooter");

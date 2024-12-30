@@ -17,6 +17,7 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -70,8 +71,8 @@ public final class Constants {
     public static final double TURN_MOTOR_VCONVERSION = TURN_MOTOR_PCONVERSION;
     public static final double KP_TURNING = 0.5;
 
-    public static final double DRIVETRAIN_MAX_SPEED = 6.62; //TODO: Determine max Speed
-    public static final double DRIVETRAIN_MAX_ANGULAR_SPEED = 3.45 * Math.PI; //TODO: Determine max angular speed
+    public static final double DRIVETRAIN_MAX_SPEED = 6.62;
+    public static final double DRIVETRAIN_MAX_ANGULAR_SPEED = 3.45 * Math.PI;
 
     //Swerve Kinematics
     public static final double TRACK_WIDTH = Units.inchesToMeters(21.75);
@@ -190,15 +191,17 @@ public final class Constants {
     public static final double PIVOT_kP = 0.09; 
     public static final double PIVOT_kI = 0.00008;
     public static final double PIVOT_kD = 0;
+    
+    public static final double PIVOT_SIM_kP = PIVOT_kP * 100;
 
     public static final double PIVOT_MIN_OUTPUT = -0.85;
     public static final double PIVOT_MAX_OUTPUT = 0.85;
 
-    public static final double AMP_PIVOT_POSITION = 27.3; //TODO: Pivot positions for amp passing speaker
+    public static final double AMP_PIVOT_POSITION = 27.3;
     public static final double PASSING_PIVOT_POSITION = 29.5;
     public static final double SPEAKER_PIVOT_POSITION = 32.4;
     public static final double TRAP_PIVOT_POSITION = 58;
-    public static final double FLOOR_TO_SHOOTER = Units.inchesToMeters(7); //TODO: floor to shooter length
+    public static final double FLOOR_TO_SHOOTER = Units.inchesToMeters(7);
     public static final double PIVOT_OUTAKE_POSITION = 11.5;
 
     public static final double PASSING_VOLTAGE = 6.4;
@@ -210,6 +213,8 @@ public final class Constants {
     public static final double PIVOT_ZEROING_SPEED = -0.075;
 
     public static final double LEFT_TO_RIGHT_VOLTAGE_OFFSET = 2.5;
+
+    public static final Translation3d SHOOTER_TRANSLATION_ON_ROBOT = new Translation3d(0.108, 0, 0.154);
   }
 
   public static final class TransportConstants{
@@ -241,18 +246,22 @@ public final class Constants {
   public static final class AmpBarConstants{
     public static final int AMP_BAR_ID = 41;
 
-    public static final double AMP_BAR_kP = 0.25; //TODO: Amp bar PID Constants
+    public static final double AMP_BAR_kP = 0.25;
     public static final double AMP_BAR_kI = 0;
     public static final double AMP_BAR_kD = 0;
+
+    public static final double AMP_BAR_SIM_kP = AMP_BAR_kP * 7.5;
 
     public static final double AMP_BAR_MIN_OUTPUT = -0.5;
     public static final double AMP_BAR_MAX_OUTPUT = 0.5;
 
-    public static final double STOWED_ROT = -19.1; 
-    public static final double DEPLOYED_ROT = -1.0;
+    public static final double STOWED_ROT = -19.1; // 135 degrees
+    public static final double DEPLOYED_ROT = -1.0; // -60 degrees
     public static final double TRAP_ROT = -4.7;
     public static final double CLIMB_ROT = -3;
-    public static final double DEFENSE_ROT = -6.7;
+    public static final double DEFENSE_ROT = -6.7; // 0 degrees
+
+    public static final Translation3d AMP_BAR_TRANSLATION_ON_ROBOT = new Translation3d(0.068, 0, 0.632);
   }
 
   public static final class FieldConstants{

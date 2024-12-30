@@ -61,6 +61,7 @@ public class IntakeSim implements IntakeIO {
     // if the note is gone, we clear the integral
     else intakeVoltageIntegralSinceNoteTaken = 0.0;
 
+    // TODO: simulate outtaking
     // // if the integral is negative, we get rid of the note
     // if (intakeVoltageIntegralSinceNoteTaken < 0 && intakeSim.obtainGamePieceFromIntake())
     //   // splits the note out by adding it on field
@@ -79,6 +80,8 @@ public class IntakeSim implements IntakeIO {
     //     && intakeSim.obtainGamePieceFromIntake())
     //   // launch the note by calling the shoot note call back
     //   passNoteToFlyWheelsCall.run();
+
+    // TODO: note detection sim(?)
   }
 
   @Override

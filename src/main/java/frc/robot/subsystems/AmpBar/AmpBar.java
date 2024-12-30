@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.AmpBar;
 
+import org.littletonrobotics.junction.Logger;
+
 // import com.revrobotics.CANSparkBase.ControlType;
 // import com.revrobotics.CANSparkBase.IdleMode;
 // import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -62,6 +64,7 @@ public class AmpBar extends SubsystemBase {
     }
 
     io.updateInputs(inputs);
+    Logger.processInputs("Amp Bar", inputs);
 
     // SmarterDashboard.putNumber("Amp Bar Position", ampBarEncoder.getPosition(), "Amp Bar");
     // SmarterDashboard.putNumber("Amp Bar Adjust", ampBarAdjust, "Amp Bar");

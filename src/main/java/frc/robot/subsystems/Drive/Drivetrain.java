@@ -167,6 +167,8 @@ public class Drivetrain extends SubsystemBase {
   @Override
   public void periodic() {
     gyroIO.updateInputs(gyroInputs);
+    Logger.processInputs("Drive/Gyro", gyroInputs);
+
     RobotContainer.poseEstimation.updateOdometry(getHeadingRotation2d(), getModulePositions());
 
     SmarterDashboard.putString("Drive Mode", getDriveMode().toString(), "Drivetrain");

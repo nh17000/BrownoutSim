@@ -6,7 +6,9 @@ public interface AmpBarIO {
   @AutoLog
   public static class AmpBarIOInputs {
     public double ampBarPos = 0.0;
+    public double ampBarIntendedPos = 0.0;
     public double ampBarCurrent = 0.0;
+    public double ampBarVolts = 0.0;
   }
 
   public default void updateInputs(AmpBarIOInputs inputs) {}
