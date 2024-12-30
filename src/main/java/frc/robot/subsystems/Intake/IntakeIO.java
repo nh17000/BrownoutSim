@@ -6,9 +6,11 @@ public interface IntakeIO {
   @AutoLog
   public static class IntakeIOInputs {
     public double intakeCurrent = 0.0;
+    public double intakeVolts = 0.0;
     public double transportCurrent = 0.0;
+    public double transportVolts = 0.0;
 
-    public boolean hasNote = false;
+    public boolean hasNote = true;
     public boolean hasTarget = false;
   }
 

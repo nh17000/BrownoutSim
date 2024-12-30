@@ -58,6 +58,8 @@ public class ShooterSim implements ShooterIO {
     inputs.shooterPivotIntendedPos = this.intended;
     inputs.shooterPivotVolts = this.pivotVolts;
 
+    inputs.leftShooterVolts = flywheelVolts;
+
     Logger.recordOutput("MechanismPoses/Shooter", new Pose3d(
       ShooterConstants.SHOOTER_TRANSLATION_ON_ROBOT, new Rotation3d(0, this.angle, 0)));
 
@@ -121,24 +123,25 @@ public class ShooterSim implements ShooterIO {
   public void shootNote() {
     Pose2d robotSimulationWorldPose = driveSim.getSimulatedDriveTrainPose();
     ChassisSpeeds chassisSpeedsFieldRelative = driveSim.getDriveTrainSimulatedChassisSpeedsFieldRelative();
+    Pose3d shooterToRobot = new Pose3d(
+      ShooterConstants.SHOOTER_TRANSLATION_ON_ROBOT, new Rotation3d(0, this.angle, 0));
 
-    // TODO: test...why isn't this running?
+    //TODO: fix shot angle and pos
     SimulatedArena.getInstance()
         .addGamePieceProjectile(
             new NoteOnFly(
-                    robotSimulationWorldPose
-                        .getTranslation(), // specify the position of the chassis
-                    ShooterConstants.SHOOTER_TRANSLATION_ON_ROBOT.toTranslation2d(), // the shooter is installed at this position on the robot (in reference
+                    robotSimulationWorldPose.getTranslation(), // specify the position of the chassis
+                    shooterToRobot.getTranslation().toTranslation2d(), // the shooter is installed at this position on the robot (in reference
                     // to the robot chassis center)
                     chassisSpeedsFieldRelative, // specify the field-relative speed of the chassis
                     // to add it to the initial velocity of the projectile
-                    robotSimulationWorldPose
-                        .getRotation(), // the shooter facing is the robot's facing
-                    0.45, // initial height of the flying note
-                    flywheelVolts / ShooterConstants.SPEAKER_VOLTAGE * 20, // we [5516] think the launching speed is proportional to the rpm, and is 16
+                    robotSimulationWorldPose.getRotation(), // the shooter facing is the robot's facing
+                    shooterToRobot.getZ(), // 0.45 // initial height of the flying note
+                    // flywheelVolts / ShooterConstants.SPEAKER_VOLTAGE * 20, // we [5516] think the launching speed is proportional to the rpm, and is 16
                     // meters/second when the motor rpm is 6000
                     // i haven't implemented flywheelsim yet, so i'm assuming our speaker shots are 20 m/s
-                    pivotSim.getAngleRads() // the note is launched at the angle of the pivot
+                    -16, // 16 m/s
+                    -shooterToRobot.getRotation().getAngle() // the note is launched at the angle of the pivot
                     )
                 .asSpeakerShotNote(() -> System.out.println("hit target!!!"))
                 .enableBecomeNoteOnFieldAfterTouchGround()

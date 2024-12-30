@@ -13,6 +13,9 @@ public interface ShooterIO {
     public double leftShooterSpeed = 0.0;
     public double rightShooterSpeed = 0.0;
 
+    public double leftShooterVolts = 0.0;
+    public double rightShooterVolts = 0.0;
+
     public double leftShooterStatorCurrent = 0.0;
     public double rightShooterStatorCurrent = 0.0;
     public double leftShooterSupplyCurrent = 0.0;

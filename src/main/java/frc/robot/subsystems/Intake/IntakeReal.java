@@ -38,9 +38,11 @@ public class IntakeReal implements IntakeIO {
   public void updateInputs(IntakeIOInputs inputs) {
     inputs.intakeCurrent = utbRoller.getOutputCurrent();
     inputs.hasTarget = noteDetectionDebouncer.calculate(llTable.getEntry("tv").getDouble(0) == 1);
-
+    inputs.intakeVolts = utbRoller.getAppliedOutput();
+    
     inputs.hasNote = irDebouncer.calculate(!irSensor.get());
     inputs.transportCurrent = transportMotor.getOutputCurrent();
+    inputs.transportVolts = transportMotor.getAppliedOutput();
   }
 
   @Override

@@ -15,9 +15,7 @@ public class IntakeSim implements IntakeIO {
 
   private final AbstractDriveTrainSimulation driveSim;
 
-  private double intakeVoltage = 0.0;
-
-  private Shooter shooter = Shooter.getInstance();
+  private double intakeVoltage = 0.0, transportVoltage = 0.0;
 
   public IntakeSim(AbstractDriveTrainSimulation driveSim) {
     intakeSim = IntakeSimulation.InTheFrameIntake(
@@ -34,6 +32,12 @@ public class IntakeSim implements IntakeIO {
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
+    inputs.intakeVolts = intakeVoltage;
+    inputs.transportVolts = transportVoltage;
+
+    // TODO: note detection sim(?)
+    inputs.hasTarget = false;
+
     // gamePiecesInIntakeCount shows the amount of game pieces in the intake, we store this in the
     // inputs
     inputs.hasNote = intakeSim.getGamePiecesAmount() != 0;
@@ -43,19 +47,7 @@ public class IntakeSim implements IntakeIO {
     // otherwise, it's stopped
     else intakeSim.stopIntake();
 
-    // if (intakeHasNote) {
-    //   SimulatedArena.getInstance()
-    //       .addGamePiece(
-    //           new CrescendoNoteOnField(
-    //               driveSim
-    //                   .getSimulatedDriveTrainPose()
-    //                   .getTranslation()
-    //                   .plus(
-    //                       new Translation2d(0, 0.5))));
-    // }
-
-    // TODO: note detection sim(?)
-    inputs.hasTarget = false;
+    // TODO: visualize note in robot
   }
 
   @Override
@@ -65,9 +57,10 @@ public class IntakeSim implements IntakeIO {
 
   @Override
   public void setTransport(double speed) {
-    if (speed > 0.35 && intakeSim.obtainGamePieceFromIntake()) { 
-      shooter.shootNote();
-    } else if (speed < -0.35 && intakeSim.obtainGamePieceFromIntake()) {
+    if (speed > 0.35 /* && intakeSim.obtainGamePieceFromIntake() */) { 
+      // note: do not call Shooter.getInstance() before a Shooter instance is created
+      Shooter.getInstance().shootNote(); 
+    } else if (speed < -0.35 /* && intakeSim.obtainGamePieceFromIntake() */) {
       // splits the note out by adding it on field
       SimulatedArena.getInstance()
           .addGamePiece(
@@ -76,7 +69,7 @@ public class IntakeSim implements IntakeIO {
                       .getSimulatedDriveTrainPose()
                       .getTranslation()
                       .plus(
-                          new Translation2d(-0.4, 0)
+                          new Translation2d(0.4, 0)
                               .rotateBy(driveSim.getSimulatedDriveTrainPose().getRotation()))));
     }
   }
