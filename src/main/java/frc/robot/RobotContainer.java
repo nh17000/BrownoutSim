@@ -273,7 +273,8 @@ public class RobotContainer {
   }
 
   private void configureAutoTab() {
-    autoChooser = AutoBuilder.buildAutoChooser("A_4-6_Blue");
+    // autoChooser = AutoBuilder.buildAutoChooser("A_4-6_Blue");
+    autoChooser = AutoBuilder.buildAutoChooser("M_1-4");
     autoTab.add("Auto Chooser", autoChooser).withWidget(BuiltInWidgets.kComboBoxChooser).withSize(2, 1).withPosition(4, 0);
   } 
 

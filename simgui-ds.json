@@ -78,21 +78,13 @@
       "povCount": 0
     },
     {
-      "axisConfig": [
-        {},
-        {},
-        {
-          "decKey": 80,
-          "incKey": 79
-        }
-      ],
       "axisCount": 4,
       "buttonCount": 4,
       "buttonKeys": [
-        77,
-        45,
-        61,
-        47,
+        89,
+        85,
+        79,
+        80,
         -1
       ],
       "povConfig": [

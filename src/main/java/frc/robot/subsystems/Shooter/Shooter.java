@@ -168,10 +168,10 @@ public class Shooter extends SubsystemBase {
 
     double notePos = intake.getNotePosition();
     if (notePos >= 0.9 && intake.obtainGamePieceFromIntake()) {
-      io.visualizeNote(-1);
+      io.visualizeHeldNote(-1);
       io.shootNote();
     } else {
-      io.visualizeNote(notePos);
+      io.visualizeHeldNote(notePos);
     }
     
     // This method will be called once per scheduler run
