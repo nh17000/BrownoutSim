@@ -1,15 +1,10 @@
 {
-  "HALProvider": {
-    "Other Devices": {
-      "window": {
-        "visible": false
-      }
-    }
-  },
   "NTProvider": {
     "types": {
+      "/AdvantageKit/RealOutputs/Alerts": "Alerts",
       "/FMSInfo": "FMSInfo",
-      "/Shuffleboard/Auto/Auto Chooser": "String Chooser"
+      "/Shuffleboard/Auto/Auto Chooser": "String Chooser",
+      "/SmartDashboard/Alerts": "Alerts"
     }
   },
   "NetworkTables Info": {

@@ -215,6 +215,8 @@ public final class Constants {
     public static final double LEFT_TO_RIGHT_VOLTAGE_OFFSET = 2.5;
 
     public static final Translation3d SHOOTER_TRANSLATION_ON_ROBOT = new Translation3d(0.108, 0, 0.154);
+    
+    public static final double FLYWHEEL_VOLTAGE_TO_LAUNCH_VELOCITY = 2.7;
   }
 
   public static final class TransportConstants{
@@ -270,7 +272,8 @@ public final class Constants {
 
     public static final double SPEAKER_HEIGHT = Units.inchesToMeters(80.515);
 
-    public static final Pose2d INIT_SIM_POSE = new Pose2d(1.45, 7.33, new Rotation2d(0));
+    // public static final Pose2d INIT_SIM_POSE = new Pose2d(1.45, 7.33, new Rotation2d(0));
+    public static final Pose2d INIT_SIM_POSE = new Pose2d(1.4, 5.55, new Rotation2d(0));
   }
 
   public static final class VisionConstants{

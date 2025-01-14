@@ -32,9 +32,6 @@ public class AmpBarReal implements AmpBarIO {
 
   @Override
   public void setReference(double reference) {
-    ampBarController.setReference(
-        reference,
-        ControlType.kPosition,
-        0);
+    ampBarController.setReference(reference, ControlType.kPosition);
   }
 }

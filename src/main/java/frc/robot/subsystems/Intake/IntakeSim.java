@@ -28,6 +28,8 @@ public class IntakeSim implements IntakeIO {
     intakeSim.register();
     
     this.driveSim = driveSim;
+
+    preloadNote();
   }
 
   @Override
@@ -61,7 +63,7 @@ public class IntakeSim implements IntakeIO {
   public void setTransport(double speed) {
     transportVoltage = speed * 12;
     if (speed > TransportConstants.TRANSPORT_HOLD_SPEED) { // shoot
-      notePosition += speed * 0.25;
+      notePosition += speed * 0.1;
 
       // note: do not call Shooter.getInstance() before a Shooter instance is created
       // if (notePosition >= 0.9 && intakeSim.obtainGamePieceFromIntake()) {
@@ -73,7 +75,7 @@ public class IntakeSim implements IntakeIO {
       // }
     } else if (notePosition > -1) { // outtake/hold
       // holds at pos 0.5, will decrease below 0.5 if negative
-      notePosition = Math.min(notePosition + (speed * 0.25), 0.5); 
+      notePosition = Math.min(notePosition + (speed * 0.1), 0.5); 
       
       // splits the note out by adding it on field
       if (speed < 0 && notePosition <= 0.1 && intakeSim.obtainGamePieceFromIntake()) {
@@ -93,5 +95,19 @@ public class IntakeSim implements IntakeIO {
   @Override
   public boolean obtainGamePieceFromIntake() {
     return intakeSim.obtainGamePieceFromIntake();
+  }
+
+  private void preloadNote() {
+    intakeSim.startIntake();
+
+    SimulatedArena.getInstance()
+            .addGamePiece(
+                new CrescendoNoteOnField(
+                    driveSim
+                        .getSimulatedDriveTrainPose()
+                        .getTranslation()
+                        .plus(
+                            new Translation2d(0.1, 0)
+                                .rotateBy(driveSim.getSimulatedDriveTrainPose().getRotation()))));
   }
 }
