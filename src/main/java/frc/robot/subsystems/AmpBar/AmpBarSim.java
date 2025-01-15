@@ -4,8 +4,8 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
@@ -52,10 +52,10 @@ public class AmpBarSim implements AmpBarIO {
     inputs.ampBarIntendedPos = this.intendedAngle;
     inputs.ampBarVolts = this.volts;
 
-    Logger.recordOutput("MechanismPoses/Amp Bar", new Pose3d(
+    Logger.recordOutput("MechanismPoses/Amp Bar", new Transform3d(
       AmpBarConstants.AMP_BAR_TRANSLATION_ON_ROBOT, new Rotation3d(0, this.angle, 0)));
 
-    Logger.recordOutput("MechanismPoses/Amp Bar Intended", new Pose3d(
+    Logger.recordOutput("MechanismPoses/Amp Bar Intended", new Transform3d(
       AmpBarConstants.AMP_BAR_TRANSLATION_ON_ROBOT, new Rotation3d(0, this.intendedAngle, 0)));
   }
   

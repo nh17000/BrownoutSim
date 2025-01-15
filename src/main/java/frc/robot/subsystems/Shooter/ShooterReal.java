@@ -85,7 +85,7 @@ public class ShooterReal implements ShooterIO {
 
   @Override
   public void setPivotReference(double reference) {
-    pivotController.setReference(reference, ControlType.kPosition, 0);
+    pivotController.setReference(reference, ControlType.kPosition);
   }
 
   @Override

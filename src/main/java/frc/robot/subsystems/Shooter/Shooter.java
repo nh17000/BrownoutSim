@@ -97,18 +97,6 @@ public class Shooter extends SubsystemBase {
   private Intake intake = Intake.getInstance();
 
   public Shooter(ShooterIO io) {
-    // leftShooter = new PearadoxTalonFX(ShooterConstants.LEFT_SHOOTER_ID, NeutralModeValue.Coast, 50, true); 
-    
-    // rightShooter = new PearadoxTalonFX(ShooterConstants.RIGHT_SHOOTER_ID, NeutralModeValue.Coast, 50, false);
-
-    // pivot = new PearadoxSparkFlex(ShooterConstants.PIVOT_ID, MotorType.kBrushless, IdleMode.kBrake, 50, true,
-    //   ShooterConstants.PIVOT_kP, ShooterConstants.PIVOT_kI, ShooterConstants.PIVOT_kD,
-    //   ShooterConstants.PIVOT_MIN_OUTPUT, ShooterConstants.PIVOT_MAX_OUTPUT);
-
-    // pivotEncoder = pivot.getEncoder();
-
-    // pivotController = pivot.getPIDController();
-
     //Red
     pivotLerp.addPoint(52, 32.4); //0ft
     pivotLerp.addPoint(46.7, 29.57);
@@ -168,10 +156,10 @@ public class Shooter extends SubsystemBase {
 
     double notePos = intake.getNotePosition();
     if (notePos >= 0.9 && intake.obtainGamePieceFromIntake()) {
-      io.visualizeNote(-1);
+      io.visualizeHeldNote(-1);
       io.shootNote();
     } else {
-      io.visualizeNote(notePos);
+      io.visualizeHeldNote(notePos);
     }
     
     // This method will be called once per scheduler run
@@ -180,15 +168,6 @@ public class Shooter extends SubsystemBase {
     SmarterDashboard.putNumber("Shooter Pivot Intended Angle", calculatePivotAngle(), "Shooter");  
     SmarterDashboard.putBoolean("Shooter Has Priority Target", hasPriorityTarget(), "Shooter"); 
     SmarterDashboard.putNumber("Shooter Pivot Adjust", pivotAdjust, "Shooter");
-
-    // SmarterDashboard.putNumber("Shooter Pivot Position", pivotEncoder.getPosition(), "Shooter");
-    // SmarterDashboard.putNumber("Shooter Pivot Current", pivot.getOutputCurrent(), "Shooter");
-    // SmarterDashboard.putNumber("Left Shooter Speed", leftShooter.getVelocity().getValueAsDouble() * 60.0, "Shooter");
-    // SmarterDashboard.putNumber("Right Shooter Speed", rightShooter.getVelocity().getValueAsDouble() * 60.0, "Shooter");
-    // SmarterDashboard.putNumber("Right Shooter Stator Current", rightShooter.getStatorCurrent().getValueAsDouble(), "Shooter");
-    // SmarterDashboard.putNumber("Left Shooter Stator Current", leftShooter.getStatorCurrent().getValueAsDouble(), "Shooter");
-    // SmarterDashboard.putNumber("Right Shooter Supply Current", rightShooter.getSupplyCurrent().getValueAsDouble(), "Shooter");
-    // SmarterDashboard.putNumber("Left Shooter Supply Current", leftShooter.getSupplyCurrent().getValueAsDouble(), "Shooter");
 
     shooterModeEntry.setString(shooterMode.toString());
     pivotAdjustEntry.setDouble(pivotAdjust);
@@ -298,16 +277,6 @@ public class Shooter extends SubsystemBase {
 
   public void setBrakeMode(boolean brake){
     io.setBrakeMode(brake);
-    // if(brake){
-    //   leftShooter.setNeutralMode(NeutralModeValue.Brake);
-    //   rightShooter.setNeutralMode(NeutralModeValue.Brake);
-      // pivot.setBrakeMode(IdleMode.kBrake);
-
-    // }
-    // else{
-    //   leftShooter.setNeutralMode(NeutralModeValue.Coast);
-    //   rightShooter.setNeutralMode(NeutralModeValue.Coast);
-    // }
   }
 
   public void setPivot(double speed){

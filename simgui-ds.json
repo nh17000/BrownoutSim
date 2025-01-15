@@ -1,9 +1,4 @@
 {
-  "Joysticks": {
-    "window": {
-      "visible": false
-    }
-  },
   "Keyboard 0 Settings": {
     "window": {
       "visible": true
@@ -12,11 +7,6 @@
   "Keyboard 1 Settings": {
     "window": {
       "visible": true
-    }
-  },
-  "System Joysticks": {
-    "window": {
-      "visible": false
     }
   },
   "keyboardJoysticks": [
@@ -43,23 +33,15 @@
         {
           "decKey": 73,
           "incKey": 75
-        },
-        {
-          "decKey": 39,
-          "incKey": 59
-        },
-        {
-          "decKey": 46,
-          "incKey": 44
         }
       ],
-      "axisCount": 6,
+      "axisCount": 7,
       "buttonCount": 6,
       "buttonKeys": [
-        86,
-        67,
         90,
         88,
+        67,
+        86,
         49,
         51
       ],
@@ -75,25 +57,16 @@
           "key90": 326
         }
       ],
-      "povCount": 0
+      "povCount": 1
     },
     {
-      "axisConfig": [
-        {},
-        {},
-        {
-          "decKey": 80,
-          "incKey": 79
-        }
-      ],
-      "axisCount": 4,
+      "axisCount": 0,
       "buttonCount": 4,
       "buttonKeys": [
         77,
-        45,
-        61,
-        47,
-        -1
+        44,
+        46,
+        47
       ],
       "povConfig": [
         {

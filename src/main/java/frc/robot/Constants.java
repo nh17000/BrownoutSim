@@ -109,8 +109,8 @@ public final class Constants {
     public static final double kS_PERCENT = 0.035;
     public static final double kP_PERCENT = 0.006;
 
-    public static final double ROBOT_MASS = 59.9;
-    public static final double ROBOT_MOI = 6.883;
+    public static final double ROBOT_MASS = 59.9; // 132 lbs
+    public static final double ROBOT_MOI = 6.883; // estimate
     public static final int DRIVE_CURRENT_LIMIT = 60;
     public static final int TURN_CURRENT_LIMIT = 20;
 
@@ -120,7 +120,7 @@ public final class Constants {
       new ModuleConfig(
         WHEEL_DIAMETER / 2,
         DRIVETRAIN_MAX_SPEED,
-        COTS.WHEELS.VEX_GRIP_V2.cof,
+        COTS.WHEELS.VEX_GRIP_V2.cof, // 1.916
         DCMotor.getKrakenX60(1).withReduction(DRIVE_MOTOR_GEAR_RATIO),
         DRIVE_CURRENT_LIMIT,
         1),
@@ -135,7 +135,7 @@ public final class Constants {
         COTS.ofMark4i(
             DCMotor.getKrakenX60(1), 
             DCMotor.getKrakenX60(1), 
-            COTS.WHEELS.VEX_GRIP_V2.cof, 
+            COTS.WHEELS.VEX_GRIP_V2.cof, // 1.916
             3), // L3 gear ratio, 150/7
         COTS.ofPigeon2());
 
@@ -215,6 +215,8 @@ public final class Constants {
     public static final double LEFT_TO_RIGHT_VOLTAGE_OFFSET = 2.5;
 
     public static final Translation3d SHOOTER_TRANSLATION_ON_ROBOT = new Translation3d(0.108, 0, 0.154);
+    
+    public static final double FLYWHEEL_VOLTAGE_TO_LAUNCH_VELOCITY = 2.7;
   }
 
   public static final class TransportConstants{
@@ -270,7 +272,11 @@ public final class Constants {
 
     public static final double SPEAKER_HEIGHT = Units.inchesToMeters(80.515);
 
-    public static final Pose2d INIT_SIM_POSE = new Pose2d(1.45, 7.33, new Rotation2d(0));
+    // starts on blue alliance near amp, initial pose of amp side auton
+    // public static final Pose2d INIT_SIM_POSE = new Pose2d(1.45, 7.33, new Rotation2d(0));
+
+    // in front of blue alliance subwoofer, initial pose of middle auton
+    public static final Pose2d INIT_SIM_POSE = new Pose2d(1.4, 5.55, new Rotation2d(0));
   }
 
   public static final class VisionConstants{

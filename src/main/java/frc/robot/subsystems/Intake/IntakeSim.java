@@ -28,6 +28,8 @@ public class IntakeSim implements IntakeIO {
     intakeSim.register();
     
     this.driveSim = driveSim;
+
+    preloadNote();
   }
 
   @Override
@@ -59,9 +61,11 @@ public class IntakeSim implements IntakeIO {
 
   @Override
   public void setTransport(double speed) {
+    final double NOTE_TRAVEL_SPEED = 0.075;
+
     transportVoltage = speed * 12;
     if (speed > TransportConstants.TRANSPORT_HOLD_SPEED) { // shoot
-      notePosition += speed * 0.25;
+      notePosition += speed * NOTE_TRAVEL_SPEED;
 
       // note: do not call Shooter.getInstance() before a Shooter instance is created
       // if (notePosition >= 0.9 && intakeSim.obtainGamePieceFromIntake()) {
@@ -73,7 +77,7 @@ public class IntakeSim implements IntakeIO {
       // }
     } else if (notePosition > -1) { // outtake/hold
       // holds at pos 0.5, will decrease below 0.5 if negative
-      notePosition = Math.min(notePosition + (speed * 0.25), 0.5); 
+      notePosition = Math.min(notePosition + (speed * NOTE_TRAVEL_SPEED), 0.5); 
       
       // splits the note out by adding it on field
       if (speed < 0 && notePosition <= 0.1 && intakeSim.obtainGamePieceFromIntake()) {
@@ -84,7 +88,7 @@ public class IntakeSim implements IntakeIO {
                         .getSimulatedDriveTrainPose()
                         .getTranslation()
                         .plus(
-                            new Translation2d(0.6, 0)
+                            new Translation2d(0.65, 0)
                                 .rotateBy(driveSim.getSimulatedDriveTrainPose().getRotation()))));
       }
     }
@@ -93,5 +97,20 @@ public class IntakeSim implements IntakeIO {
   @Override
   public boolean obtainGamePieceFromIntake() {
     return intakeSim.obtainGamePieceFromIntake();
+  }
+
+  // adds a note to the field right behind the robot, which is immediately into
+  private void preloadNote() {
+    intakeSim.startIntake();
+
+    SimulatedArena.getInstance()
+            .addGamePiece(
+                new CrescendoNoteOnField(
+                    driveSim
+                        .getSimulatedDriveTrainPose()
+                        .getTranslation()
+                        .plus(
+                            new Translation2d(0.1, 0)
+                                .rotateBy(driveSim.getSimulatedDriveTrainPose().getRotation()))));
   }
 }

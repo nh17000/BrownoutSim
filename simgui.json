@@ -8,11 +8,28 @@
   },
   "NTProvider": {
     "types": {
+      "/AdvantageKit/RealOutputs/Alerts": "Alerts",
       "/FMSInfo": "FMSInfo",
-      "/Shuffleboard/Auto/Auto Chooser": "String Chooser"
+      "/Shuffleboard/Auto/Auto Chooser": "String Chooser",
+      "/SmartDashboard/Alerts": "Alerts"
+    },
+    "windows": {
+      "/AdvantageKit/RealOutputs/Alerts": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/Shuffleboard/Auto/Auto Chooser": {
+        "window": {
+          "visible": true
+        }
+      }
     }
   },
   "NetworkTables Info": {
     "visible": true
+  },
+  "NetworkTables View": {
+    "visible": false
   }
 }

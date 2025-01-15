@@ -63,16 +63,21 @@ public class ShooterSim implements ShooterIO {
     inputs.shooterPivotIntendedPos = this.intended;
     inputs.shooterPivotVolts = this.pivotVolts;
 
-    inputs.leftShooterVolts = flywheelVolts;
+    inputs.leftShooterVolts = this.flywheelVolts + ShooterConstants.LEFT_TO_RIGHT_VOLTAGE_OFFSET;
+    inputs.rightShooterVolts = this.flywheelVolts;
 
-    Logger.recordOutput("MechanismPoses/Shooter", getShooterPose(this.angle));
-    Logger.recordOutput("MechanismPoses/Shooter Intended", getShooterPose(this.intended));
+    Logger.recordOutput("MechanismPoses/Shooter", getShooterTransform(this.angle));
+    Logger.recordOutput("MechanismPoses/Shooter Intended", getShooterTransform(this.intended));
   }
 
   @Override
   public void setPivotReference(double reference) {
-    // angle -> encoder value -> angle
-    intended = Units.degreesToRadians(Shooter.getInstance().pivotLerp.inverseInterpolate(reference) - 90);
+    // converts encoder value back to an angle
+    this.intended = Units.degreesToRadians(
+      Shooter.getInstance().pivotLerp.inverseInterpolate(reference) 
+      - 90 // shooter starts vertically, so -90 is horizontal
+      + 5 // adds 5 degrees to compensate for sim launch velocity -- maple sim uses g=11?
+    );
 
     pivotVolts = MathUtil.clamp(
       pivotController.calculate(pivotSim.getAngleRads(), intended), -12, 12);
@@ -96,7 +101,10 @@ public class ShooterSim implements ShooterIO {
     int tagID = isRedAlliance ? 4 : 7;
     Pose2d tagPose = RobotContainer.aprilTagFieldLayout.getTagPose(tagID).get().toPose2d();
 
-    boolean usePoseEstimate = false; // testing
+    // currently, the odometry simulation is inaccurate, because the sim PID isn't tuned well
+    // so it resets its odometry every tick, as if its odometry is perfect
+    // set this boolean to false to model simulated odometry as it would behave on a real robot
+    boolean usePoseEstimate = false;
     if (!usePoseEstimate) { RobotContainer.poseEstimation.resetPose(driveSim.getSimulatedDriveTrainPose()); }
     Pose2d robotPose = usePoseEstimate ? RobotContainer.poseEstimation.getEstimatedPose() : driveSim.getSimulatedDriveTrainPose();
 
@@ -107,7 +115,7 @@ public class ShooterSim implements ShooterIO {
     double hypot = Math.hypot(x, z);
 
     double angle = Math.atan((FieldConstants.SPEAKER_HEIGHT - ShooterConstants.FLOOR_TO_SHOOTER) / hypot);
-    return Units.radiansToDegrees(angle) + 3.5; // adds 3.5 degrees in sim to compensate for launch velocity
+    return Units.radiansToDegrees(angle);
   }
 
   @Override
@@ -118,21 +126,21 @@ public class ShooterSim implements ShooterIO {
 
   @Override
   public void setShooterVolts(double leftVolts, double rightVolts) {
-    flywheelVolts = leftVolts;
+    flywheelVolts = rightVolts;
   }
 
-  public Pose3d getShooterPose() {
+  public Transform3d getShooterTransform() {
     angle = pivotSim.getAngleRads();
-    return getShooterPose(angle);
+    return getShooterTransform(angle);
   }
 
-  public Pose3d getShooterPose(double pitch) {
-    return new Pose3d(
+  public Transform3d getShooterTransform(double pitch) {
+    return new Transform3d(
       ShooterConstants.SHOOTER_TRANSLATION_ON_ROBOT, new Rotation3d(0, pitch, 0));
   }
 
   // position = percentage of the way from the intake to the flywheels, 0 to 1, default 0.5
-  public Pose3d getNoteInShooterPose(Pose3d shooterPose, double position) {
+  public Transform3d getNoteInShooterTransform(Transform3d shooterPose, double position) {
     Transform3d noteToShooter = new Transform3d(
       new Translation3d(
         -ShooterConstants.SHOOTER_TRANSLATION_ON_ROBOT.getX() + 0.148, 
@@ -144,37 +152,71 @@ public class ShooterSim implements ShooterIO {
   }
 
   @Override
-  public void visualizeNote(double pos) {
-    Logger.recordOutput("Shooter/Origin", new Pose3d());
-    if (pos >= 0) {
-      Logger.recordOutput("Shooter/Held Note", getNoteInShooterPose(getShooterPose(), pos));
-    } else {
-      Logger.recordOutput("Shooter/Held Note", new Pose3d());
+  public void visualizeHeldNote(double pos) {
+    // TODO: create a compressed note CAD (current one portrudes through sides of shooter)
+    
+    // visualizing the held note as a component of the robot is more stable
+    // as the robot pose would otherwise one tick behind when this method is called
+    // however, this means having to hide the note component below the field
+    boolean visualizeAsComponent = true;
+    if (visualizeAsComponent) {
+      // visualizes the held note as a component of the robot in a Transform3d
+      // in advantagescope, add FieldSimulation/Held Note as a component to Brownout
+      if (pos >= 0) { // position is 0-1, indicating how far it is through the intake/shooter
+        Logger.recordOutput("MechanismPoses/Held Note", 
+          getNoteInShooterTransform(getShooterTransform(), pos));
+      } else {
+        // the note component is hidden 5 meters below the robot
+        Logger.recordOutput("MechanismPoses/Held Note", 
+          new Transform3d(0.0, 0.0, -5.0, new Rotation3d()));
+      }      
+    } else { 
+      // visualizes the held note as a unique game piece
+      // in advantagescope, add FieldSimulation/Held Note as a Note game piece
+      Pose3d robotPose = new Pose3d(driveSim.getSimulatedDriveTrainPose());
+      if (pos >= 0) { // position is 0-1, indicating how far it is through the intake/shooter
+        Logger.recordOutput("FieldSimulation/Held Note", 
+          robotPose.transformBy(getNoteInShooterTransform(getShooterTransform(), pos)));
+      } else {
+        // the note component is hidden 5 meters below the robot
+        Logger.recordOutput("FieldSimulation/Held Note", 
+          new Pose3d(0.0, 0.0, -5.0, new Rotation3d()));
+      }
     }
+    
+    // TODO: climber sim
+    // currently visualizes the climbers as components at their default zero
+    Logger.recordOutput("MechanismPoses/Left Climber", Transform3d.kZero);
+    Logger.recordOutput("MechanismPoses/Right Climber", Transform3d.kZero);
   }
 
+  // visualizes a note game piece as a projectile launched from the shooter
+  // at the angle of its pivot and a velocity proportional to the voltage of the flywheels
+  // TODO: visualize amp shots at deflecting off the amp bar
   @Override
   public void shootNote() {
     Pose2d robotSimulationWorldPose = driveSim.getSimulatedDriveTrainPose();
     ChassisSpeeds chassisSpeedsFieldRelative = driveSim.getDriveTrainSimulatedChassisSpeedsFieldRelative();
-    Pose3d shooterToRobot = getShooterPose();
-    Pose3d notePose = getNoteInShooterPose(shooterToRobot, 1);
+    Transform3d shooterToRobot = getShooterTransform();
+    Transform3d stowedNoteTransform = getNoteInShooterTransform(shooterToRobot, 0.45);
+    Transform3d launchNoteTransform = getNoteInShooterTransform(shooterToRobot, 1);
 
     SimulatedArena.getInstance()
         .addGamePieceProjectile(
             new NoteOnFly(
                     robotSimulationWorldPose.getTranslation(), // specify the position of the chassis
-                    shooterToRobot.getTranslation().toTranslation2d(), // the shooter is installed at this position on the robot (in reference
+                    stowedNoteTransform.getTranslation().toTranslation2d(), // the shooter is installed at this position on the robot (in reference
                     // to the robot chassis center)
                     chassisSpeedsFieldRelative, // specify the field-relative speed of the chassis
                     // to add it to the initial velocity of the projectile
                     robotSimulationWorldPose.getRotation().rotateBy(new Rotation2d(Math.PI)), // shooter on the back of the robot
-                    notePose.getZ(), // initial height of the flying note
-                    (flywheelVolts / ShooterConstants.SPEAKER_VOLTAGE) * 16, // we [5516] think the launching speed is proportional to the rpm, and is 16
+                    launchNoteTransform.getZ(), // initial height of the flying note
+                    ShooterConstants.FLYWHEEL_VOLTAGE_TO_LAUNCH_VELOCITY * flywheelVolts, 
+                    // we [5516] think the launching speed is proportional to the rpm, and is 16
                     // meters/second when the motor rpm is 6000
                     // TODO: flywheel sim
-                    // shooterToRobot.getRotation().getAngle() - Math.PI / 2.0 // the note is launched at the angle of the pivot
-                    notePose.getRotation().getMeasureY().in(Radians)
+                    // the note is launched at the angle of the pivot
+                    launchNoteTransform.getRotation().getMeasureY().in(Radians)
                     )
                 .asSpeakerShotNote(() -> System.out.println("hit target!!!"))
                 .enableBecomeNoteOnFieldAfterTouchGround()

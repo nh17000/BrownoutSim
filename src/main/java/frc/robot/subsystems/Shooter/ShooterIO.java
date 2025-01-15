@@ -44,7 +44,7 @@ public interface ShooterIO {
 
   public boolean hasPriorityTarget(boolean isRedAlliance);
   
-  public default void visualizeNote(double pos) {}
+  public default void visualizeHeldNote(double pos) {}
 
   public default void shootNote() {}
 }
