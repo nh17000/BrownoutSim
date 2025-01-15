@@ -63,8 +63,8 @@ public class ShooterSim implements ShooterIO {
     inputs.shooterPivotIntendedPos = this.intended;
     inputs.shooterPivotVolts = this.pivotVolts;
 
-    inputs.leftShooterVolts = flywheelVolts + ShooterConstants.LEFT_TO_RIGHT_VOLTAGE_OFFSET;
-    inputs.rightShooterVolts = flywheelVolts;
+    inputs.leftShooterVolts = this.flywheelVolts + ShooterConstants.LEFT_TO_RIGHT_VOLTAGE_OFFSET;
+    inputs.rightShooterVolts = this.flywheelVolts;
 
     Logger.recordOutput("MechanismPoses/Shooter", getShooterTransform(this.angle));
     Logger.recordOutput("MechanismPoses/Shooter Intended", getShooterTransform(this.intended));
@@ -73,10 +73,10 @@ public class ShooterSim implements ShooterIO {
   @Override
   public void setPivotReference(double reference) {
     // converts encoder value back to an angle
-    intended = Units.degreesToRadians(
+    this.intended = Units.degreesToRadians(
       Shooter.getInstance().pivotLerp.inverseInterpolate(reference) 
       - 90 // shooter starts vertically, so -90 is horizontal
-      + 5 // adds 5 degrees to compensate for launch velocity
+      + 5 // adds 5 degrees to compensate for sim launch velocity -- maple sim uses g=11?
     );
 
     pivotVolts = MathUtil.clamp(
@@ -101,7 +101,10 @@ public class ShooterSim implements ShooterIO {
     int tagID = isRedAlliance ? 4 : 7;
     Pose2d tagPose = RobotContainer.aprilTagFieldLayout.getTagPose(tagID).get().toPose2d();
 
-    boolean usePoseEstimate = false; // testing
+    // currently, the odometry simulation is inaccurate, because the sim PID isn't tuned well
+    // so it resets its odometry every tick, as if its odometry is perfect
+    // set this boolean to false to model simulated odometry as it would behave on a real robot
+    boolean usePoseEstimate = false;
     if (!usePoseEstimate) { RobotContainer.poseEstimation.resetPose(driveSim.getSimulatedDriveTrainPose()); }
     Pose2d robotPose = usePoseEstimate ? RobotContainer.poseEstimation.getEstimatedPose() : driveSim.getSimulatedDriveTrainPose();
 
@@ -153,11 +156,13 @@ public class ShooterSim implements ShooterIO {
     // TODO: create a compressed note CAD (current one portrudes through sides of shooter)
     
     // visualizing the held note as a component of the robot is more stable
+    // as the robot pose would otherwise one tick behind when this method is called
+    // however, this means having to hide the note component below the field
     boolean visualizeAsComponent = true;
     if (visualizeAsComponent) {
       // visualizes the held note as a component of the robot in a Transform3d
       // in advantagescope, add FieldSimulation/Held Note as a component to Brownout
-      if (pos >= 0) {
+      if (pos >= 0) { // position is 0-1, indicating how far it is through the intake/shooter
         Logger.recordOutput("MechanismPoses/Held Note", 
           getNoteInShooterTransform(getShooterTransform(), pos));
       } else {
@@ -166,23 +171,28 @@ public class ShooterSim implements ShooterIO {
           new Transform3d(0.0, 0.0, -5.0, new Rotation3d()));
       }      
     } else { 
-      // visualizes the held note as a Pose3d
+      // visualizes the held note as a unique game piece
       // in advantagescope, add FieldSimulation/Held Note as a Note game piece
       Pose3d robotPose = new Pose3d(driveSim.getSimulatedDriveTrainPose());
-      if (pos >= 0) {
+      if (pos >= 0) { // position is 0-1, indicating how far it is through the intake/shooter
         Logger.recordOutput("FieldSimulation/Held Note", 
           robotPose.transformBy(getNoteInShooterTransform(getShooterTransform(), pos)));
       } else {
+        // the note component is hidden 5 meters below the robot
         Logger.recordOutput("FieldSimulation/Held Note", 
-          new Pose3d(0.0, 0.0, -1.0, new Rotation3d()));
+          new Pose3d(0.0, 0.0, -5.0, new Rotation3d()));
       }
     }
     
     // TODO: climber sim
+    // currently visualizes the climbers as components at their default zero
     Logger.recordOutput("MechanismPoses/Left Climber", Transform3d.kZero);
     Logger.recordOutput("MechanismPoses/Right Climber", Transform3d.kZero);
   }
 
+  // visualizes a note game piece as a projectile launched from the shooter
+  // at the angle of its pivot and a velocity proportional to the voltage of the flywheels
+  // TODO: visualize amp shots at deflecting off the amp bar
   @Override
   public void shootNote() {
     Pose2d robotSimulationWorldPose = driveSim.getSimulatedDriveTrainPose();

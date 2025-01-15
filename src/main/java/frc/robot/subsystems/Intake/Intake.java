@@ -6,23 +6,12 @@ package frc.robot.subsystems.Intake;
 
 import org.littletonrobotics.junction.Logger;
 
-// import com.revrobotics.CANSparkBase.IdleMode;
-// import com.revrobotics.CANSparkLowLevel.MotorType;
-
-// import edu.wpi.first.math.filter.Debouncer;
-// import edu.wpi.first.math.filter.Debouncer.DebounceType;
-// import edu.wpi.first.networktables.NetworkTable;
-// import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-// import frc.lib.drivers.PearadoxSparkMax;
-// import frc.lib.util.SmarterDashboard;
-// import frc.robot.Constants.IntakeConstants;
-// import frc.robot.Constants.VisionConstants;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.TransportConstants;

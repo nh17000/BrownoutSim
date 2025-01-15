@@ -6,25 +6,13 @@ package frc.robot.subsystems.AmpBar;
 
 import org.littletonrobotics.junction.Logger;
 
-// import com.revrobotics.CANSparkBase.ControlType;
-// import com.revrobotics.CANSparkBase.IdleMode;
-// import com.revrobotics.CANSparkLowLevel.MotorType;
-// import com.revrobotics.RelativeEncoder;
-// import com.revrobotics.SparkPIDController;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-// import frc.lib.drivers.PearadoxSparkMax;
 import frc.lib.util.SmarterDashboard;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.AmpBarConstants;
 
 public class AmpBar extends SubsystemBase {
-  // private PearadoxSparkMax ampBar;
-
-  // private RelativeEncoder ampBarEncoder;
-  // private SparkPIDController ampBarController;
-
   private double ampBarAdjust = 0;
 
   public enum AmpBarMode{
@@ -45,12 +33,6 @@ public class AmpBar extends SubsystemBase {
 
   /** Creates a new AmpBar. */
   public AmpBar(AmpBarIO io) {
-    // ampBar = new PearadoxSparkMax(AmpBarConstants.AMP_BAR_ID, MotorType.kBrushless, IdleMode.kBrake, 40, false, 
-    //   AmpBarConstants.AMP_BAR_kP, AmpBarConstants.AMP_BAR_kI, AmpBarConstants.AMP_BAR_kD, 
-    //   AmpBarConstants.AMP_BAR_MIN_OUTPUT, AmpBarConstants.AMP_BAR_MAX_OUTPUT);
-
-    // ampBarEncoder = ampBar.getEncoder();
-    // ampBarController = ampBar.getPIDController();
     this.io = io;
   }
 
@@ -66,9 +48,6 @@ public class AmpBar extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Amp Bar", inputs);
 
-    // SmarterDashboard.putNumber("Amp Bar Position", ampBarEncoder.getPosition(), "Amp Bar");
-    // SmarterDashboard.putNumber("Amp Bar Adjust", ampBarAdjust, "Amp Bar");
-    // SmarterDashboard.putNumber("Amp Bar Current", ampBar.getOutputCurrent(), "Amp Bar");
     SmarterDashboard.putString("Amp Bar Mode", ampBarMode.toString(), "Amp Bar");
   }
 

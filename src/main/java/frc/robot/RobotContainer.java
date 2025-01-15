@@ -5,17 +5,16 @@
 package frc.robot;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.ironmaple.simulation.seasonspecific.crescendo2024.Arena2024Crescendo;
 import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
@@ -73,6 +72,7 @@ public class RobotContainer {
 
   private final SwerveDriveSimulation swerveDriveSimulation;
   public static boolean isSimulation = false;
+  public static boolean isCrescendo = true;
 
   //Driver Controls
   public static final CommandXboxController commandDriverController = new CommandXboxController(IOConstants.DRIVER_CONTROLLER_PORT);
@@ -112,6 +112,7 @@ public class RobotContainer {
 
     if (Robot.isReal()) {
       this.swerveDriveSimulation = null;      
+
       drivetrain = Drivetrain.createInstance(
           new GyroIOPigeon2(), 
           new ModuleReal(0),
@@ -126,6 +127,11 @@ public class RobotContainer {
       this.swerveDriveSimulation = new SwerveDriveSimulation(
         SwerveConstants.mapleSimConfig,
         FieldConstants.INIT_SIM_POSE); // initial starting pose on the field
+
+      // overrides the default field (reefscape) with crescendo
+      if (isCrescendo) {
+        SimulatedArena.overrideInstance(new Arena2024Crescendo());
+      }
 
       // register the drivetrain simulation
       SimulatedArena.getInstance().addDriveTrainSimulation(swerveDriveSimulation);  
@@ -144,6 +150,7 @@ public class RobotContainer {
 
       shooter = Shooter.createInstance(new ShooterSim(swerveDriveSimulation));
 
+      // no, driver station, i do not have a controller, thanks for asking
       DriverStation.silenceJoystickConnectionWarning(true);
     }
 
@@ -280,13 +287,23 @@ public class RobotContainer {
 
   public void updateSimulationField(){
     if (swerveDriveSimulation != null) {
+      // updates field
       SimulatedArena.getInstance().simulationPeriodic();
 
+      // logs current simulated robot position to be visualized in advantagescope
       Logger.recordOutput(
           "FieldSimulation/RobotPosition", swerveDriveSimulation.getSimulatedDriveTrainPose());
 
-      final List<Pose3d> notes = SimulatedArena.getInstance().getGamePiecesByType("Note");
-      if (notes != null) Logger.recordOutput("FieldSimulation/Notes", notes.toArray(Pose3d[]::new));
+      // logs game pieces to be visualized in advantagescope
+      if (isCrescendo) {
+        Logger.recordOutput("FieldSimulation/Notes", 
+          SimulatedArena.getInstance().getGamePiecesArrayByType("Note"));
+      } else {
+        Logger.recordOutput("FieldSimulation/Algae", 
+          SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
+        Logger.recordOutput("FieldSimulation/Coral", 
+          SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
+      }
     }
   }
 }
