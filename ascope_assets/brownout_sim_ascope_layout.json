@@ -1,0 +1,364 @@
+{
+  "hubs": [
+    {
+      "x": -8,
+      "y": -8,
+      "width": 1296,
+      "height": 736,
+      "state": {
+        "sidebar": {
+          "width": 295,
+          "expanded": [
+            "/RealOutputs",
+            "/RealOutputs/Drivetrain",
+            "/RealOutputs/Amp Bar",
+            "/Log0/RealOutputs",
+            "/Log0/RealOutputs/Drivetrain",
+            "/Log1",
+            "/Log1/RealOutputs",
+            "/Log1/RealOutputs/Drivetrain",
+            "/SmartDashboard/swerve/modules/frontright",
+            "/SmartDashboard/swerve/measuredChassisSpeeds",
+            "/SmartDashboard/Swerve Drive",
+            "/SmartDashboard/Swerve Drive/errors",
+            "/SmartDashboard/swerve/measuredStates",
+            "/SmartDashboard/swerve/modules/backright",
+            "/SmartDashboard/swerve",
+            "/SmartDashboard/swerve/modules",
+            "/LiveWindow/.status",
+            "/Shuffleboard/.recording",
+            "/AdvantageKit/RealOutputs",
+            "/AdvantageKit/RealOutputs/Sim",
+            "/PathPlanner/targetPose",
+            "/AdvantageKit/RealOutputs/Drivetrain/Odometry",
+            "/AdvantageKit/RealOutputs/Drivetrain/Odometry/rotation",
+            "/AdvantageKit/RealOutputs/Drivetrain/Module States",
+            "/AdvantageKit/RealOutputs/Sim/Components Tranform3d[]",
+            "/AdvantageKit/RealOutputs/FieldSimulation",
+            "/SmartDashboard/MapleArenaSimulation",
+            "/Shuffleboard/Swerve",
+            "/Shuffleboard/Driver",
+            "/Shuffleboard/Auto",
+            "/AdvantageKit/RealOutputs/Shooter",
+            "/AdvantageKit/Drive/Module1",
+            "/AdvantageKit/Drive/Module2",
+            "/AdvantageKit/Drive/Module3",
+            "/AdvantageKit/Drive/Module4",
+            "/AdvantageKit/RealOutputs/Drivetrain/Intended Chassis Speeds",
+            "/AdvantageKit/RealOutputs/Drivetrain/Actual Chassis Speeds",
+            "/RealOutputs/Logger",
+            "/RealOutputs/LoggedRobot",
+            "/RealOutputs/RobotPose",
+            "/AdvantageKit",
+            "/AdvantageKit/RealOutputs/MechanismPoses/1",
+            "/AdvantageKit/RealOutputs/MechanismPoses/1/translation",
+            "/AdvantageKit/RealOutputs/MechanismPoses/1/rotation",
+            "/AdvantageKit/RealOutputs/MechanismPoses/1/rotation/q",
+            "/AdvantageKit/RealOutputs/Amp Bar",
+            "/AdvantageKit/RealOutputs/Drivetrain",
+            "/AdvantageKit/Amp Bar",
+            "/AdvantageKit/DriverStation",
+            "/AdvantageKit/Intake",
+            "/AdvantageKit/Shooter"
+          ]
+        },
+        "tabs": {
+          "selected": 2,
+          "tabs": [
+            {
+              "type": 0,
+              "title": "",
+              "controller": null,
+              "controllerUUID": "nefxamxueedhm54fgf47z8r5lndptbc6",
+              "renderer": "#/",
+              "controlsHeight": 0
+            },
+            {
+              "type": 1,
+              "title": "Line Graph",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/Shooter/LeftShooterVolts",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#af2437",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/Shooter/RightShooterVolts",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/Shooter/ShooterPivotVolts",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/Intake/TransportVolts",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#c0b487",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/Intake/IntakeVolts",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#5f4528",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/Shooter/ShooterPivotPos",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#858584",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/Shooter/ShooterPivotIntendedPos",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/AdvantageKit/Intake/NotePosition",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#80588e",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "discreteSources": [
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:/AdvantageKit/DriverStation/Enabled",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#d993aa"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:/AdvantageKit/DriverStation/Autonomous",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "NT:/AdvantageKit/Intake/HasNote",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#3b875a"
+                    }
+                  }
+                ],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "rightUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "oojrj8045na4uq51o3og85611nu6yj1k",
+              "renderer": null,
+              "controlsHeight": 162
+            },
+            {
+              "type": 3,
+              "title": "3D Field",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "robot",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldSimulation/RobotPosition",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "model": "Brownout V2"
+                    }
+                  },
+                  {
+                    "type": "component",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/MechanismPoses/Shooter",
+                    "logType": "Transform3d",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
+                    "type": "component",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/MechanismPoses/Amp Bar",
+                    "logType": "Transform3d",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
+                    "type": "component",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/MechanismPoses/Left Climber",
+                    "logType": "Transform3d",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
+                    "type": "component",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/MechanismPoses/Right Climber",
+                    "logType": "Transform3d",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
+                    "type": "component",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/MechanismPoses/Held Note",
+                    "logType": "Transform3d",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
+                    "type": "gamePiece",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldSimulation/Notes",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "variant": "Note"
+                    }
+                  }
+                ],
+                "game": "2024 Field",
+                "origin": "blue"
+              },
+              "controllerUUID": "lnndzqglo4kq8rby7o3mo6tpyihw09is",
+              "renderer": {
+                "cameraIndex": -2,
+                "orbitFov": 50,
+                "cameraPosition": [
+                  0.907834444296252,
+                  2.6778833390957995,
+                  -4.459846236253842
+                ],
+                "cameraTarget": [
+                  -2.66753181174348,
+                  -0.08956402778245165,
+                  0.473068128689242
+                ]
+              },
+              "controlsHeight": 165
+            },
+            {
+              "type": 9,
+              "title": "Swerve",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "chassisSpeeds",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Drivetrain/Intended Chassis Speeds",
+                    "logType": "ChassisSpeeds",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00"
+                    }
+                  },
+                  {
+                    "type": "chassisSpeeds",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Drivetrain/Actual Chassis Speeds",
+                    "logType": "ChassisSpeeds",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff0000"
+                    }
+                  },
+                  {
+                    "type": "states",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Drivetrain/Intended Module States",
+                    "logType": "SwerveModuleState[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00",
+                      "arrangement": "0,1,2,3"
+                    }
+                  },
+                  {
+                    "type": "states",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/Drivetrain/Actual Module States",
+                    "logType": "SwerveModuleState[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff0000",
+                      "arrangement": "0,1,2,3"
+                    }
+                  }
+                ],
+                "maxSpeed": 5,
+                "sizeX": 0.65,
+                "sizeY": 0.65,
+                "orientation": 1
+              },
+              "controllerUUID": "809xo4hlqk6oz96lnkyr5mgqya0nbmiy",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 8,
+              "title": "Joysticks",
+              "controller": [
+                "Xbox Controller (White)",
+                "Xbox Controller (Blue)",
+                "None",
+                "None",
+                "None",
+                "None"
+              ],
+              "controllerUUID": "opggz095pnughi6ph6g161wkm47150az",
+              "renderer": null,
+              "controlsHeight": 85
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "satellites": [],
+  "version": "4.1.1"
+}
